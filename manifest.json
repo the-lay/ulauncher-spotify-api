@@ -1,26 +1,19 @@
 {
   "required_api_version": "^2.0.0",
-  "name": "Spotify ulauncher client",
-  "description": "Control Spotify playback",
+  "name": "Ulauncher Spotify API",
+  "description": "Control Spotify from Ulauncher",
   "developer_name": "the-lay",
   "icon": "images/icon.png",
   "options": {
-    "query_debounce": 0.5
+    "query_debounce": 0.7
   },
   "preferences": [
     {
       "id": "main_keyword",
       "type": "keyword",
-      "name": "Spotify ulauncher client",
-      "description": "Control Spotify playback",
+      "name": "Ulauncher Spotify API",
+      "description": "Control Spotify from Ulauncher",
       "default_value": "sp"
-    },
-    {
-      "id": "authorization_key",
-      "type": "text",
-      "name": "authorization_key",
-      "description": "Spotify authorization key",
-      "default_value": ""
     }
   ]
 }
