@@ -1,4 +1,5 @@
 #### Application specific ignores
+secrets.py
 cache.json
 cache/
 
