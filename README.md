@@ -17,16 +17,14 @@ that make sense for a command runner.
 
 Installation
 --------------------------
-For now, you need to manually get your own Spotify Client ID and Client Secret in Dev Dashboard (and write it to secrets.py)
-Eventually, when spotipy library supports PKCE, I will be able to distribute encrypted id and secret.
-
-Ulauncher does not support extension's `requrements.txt`,
+Ulauncher does not support extension's `requirements.txt`,
 although [it's in the roadmap](https://github.com/Ulauncher/Ulauncher/issues/273).
-For now, you have to manually install [spotipy](https://github.com/plamere/spotipy/)
-on your systems Python installation. For example with PIP: `pip3 install spotipy`.
+For now, you have to manually install dependencies listed in the requirements file on your systems Python installation
+(or the one ulauncher uses). This can be done with pip, for example `pip3 install -r requirements.txt`
 
-Next, you have to go to Ulauncher's Preferences, press Add extension and enter link to this repository:
-[TODO](TODO)
+
+Next, you have to add the extension to the ulauncher: open Preferences, press Add extension and enter the link to this
+repository: `https://github.com/the-lay/ulauncher-spotify-api`.
 
 Extension's default keyword is `sp`. When you use the extension for the first time, you will have to
 go through OAuth authentication and allow access to your Spotify account.
@@ -51,13 +49,12 @@ when access token is expired)
 - Search without specifying a type (`sp search search_query`)
 - Download images to cache folder and show them in search (and clear cache on extension exit)
 - Alt-enter to add track to queue instead of playing now
-
+- PKCE authentication (need to specify spotipy commit for now, should bump the version to a release once PKCE is added)
+- Aliases for commands (`sp song` is the same as `sp track`, `sp s` is the same as `sp search`)
 
 Feature roadmap
 --------------------------
-- [PKCE authentication](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow-with-proof-key-for-code-exchange-pkce)
- once Spotipy library officially supports it
-- Add aliases/shortcuts (for example `sp song` or `sp s` can be the same as `sp track`)
+- Expose different settings in ulauncher preferences (check TODOs in code)
 - Podcasts functionality (`sp podcast`)
 - Start a radio based on currently playing track (`sp radio`)
 
@@ -67,7 +64,7 @@ If you have any suggestions or feel that something is missing, please [open a ne
 Known issues
 --------------------------
 - Spotipy's authentication workflow sets up a tiny web server to accept back Spotify's access token.
-By default port 8080 is used. If it is taken, authentication will probably crash.
+By default port 8080 is used. If it is taken, authentication will fail.
 
 - Unfortunately, Spotify does not provide API access for free users for the following actions:
   - Next track (Skip User’s Playback To Next Track)

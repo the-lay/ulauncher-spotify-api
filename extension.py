@@ -10,6 +10,7 @@ from ulauncher.api.shared.action.SetUserQueryAction import SetUserQueryAction # 
 from ulauncher.api.shared.action.DoNothingAction import DoNothingAction # noqa
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction # noqa
 
+import time
 import os
 import logging
 import random
@@ -17,22 +18,21 @@ import shutil
 from urllib.parse import urlparse
 from typing import Union
 
-# notifications - TODO do I actually need them?
-import gi # noqa
-gi.require_version('Notify', '0.7')
-from gi.repository import Notify # noqa
-
-# awesome spotify API - TODO switch to PKCE when Spotipy supports it
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy.oauth2 import SpotifyPKCE
 import requests
-import secrets
-import time
+
 
 logger = logging.getLogger(__name__)
 
 
 class UlauncherSpotifyAPIExtension(Extension, EventListener):
+
+    CLIENT_ID = '1f3a663c5fdd4056b4c0e122ea55a3af'
+    SCOPES = 'user-modify-playback-state user-read-playback-state'
+    CACHE_FOLDER = os.path.join(os.path.dirname(__file__), 'cache')
+    ACCESS_TOKEN_CACHE = os.path.join(os.path.dirname(__file__), 'cache.json')
+    REDIRECT_URI = 'http://127.0.0.1:8080' # TODO preferences modify port
 
     def __init__(self):
         super(UlauncherSpotifyAPIExtension, self).__init__()
@@ -59,32 +59,33 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             'no_shuffle': os.path.join(os.path.dirname(__file__), 'images/shuffle_off.png')
         }
 
-        # cache
-        self.cache_folder = os.path.join(os.path.dirname(__file__), 'cache')
-        if not os.path.exists(self.cache_folder):
-            os.mkdir(self.cache_folder)
+        # create cache folder
+        # TODO preferences checkbox clear cache after exit
+        if not os.path.exists(self.CACHE_FOLDER):
+            os.mkdir(self.CACHE_FOLDER)
+
+        # aliases
+        # TODO preferences modify aliases
+        self.aliases = {
+            's': 'search',
+            'song': 'track'
+        }
 
         # spotipy - spotify api client
-        self.api = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=secrets.SCOPES,
-                                                             client_id=secrets.CLIENT_ID,
-                                                             client_secret=secrets.CLIENT_SECRET,
-                                                             redirect_uri=secrets.REDIRECT_URI,
-                                                             cache_path=secrets.ACCESS_TOKEN_CACHE))
+        auth = SpotifyPKCE(client_id=self.CLIENT_ID,
+                           redirect_uri=self.REDIRECT_URI,
+                           scope=self.SCOPES,
+                           cache_path=self.ACCESS_TOKEN_CACHE)
+        self.api = spotipy.Spotify(auth_manager=auth)
 
-    # show systems notifications
-    def _show_notification(self, text: str, icon: str = 'notification') -> None:
-        Notify.init('ulauncher spotify')
-        Notify.Notification.new('ulauncher spotify', text, self.icons.get(icon, 'notification')).show()
-        return
-
-    def _clear_cache(self):
-        shutil.rmtree(self.cache_folder, ignore_errors=True)
+    def _clear_cache(self) -> None:
+        shutil.rmtree(self.CACHE_FOLDER, ignore_errors=True)
         return
 
     # download image to cache and return path to the cached image
-    def _dl_image(self, url: str = 'https://i.imgur.com/N2Ir34g.png') -> str:
+    def _dl_image(self, url: str) -> str:
         filename = os.path.basename(urlparse(url).path)
-        cache_path = os.path.join(self.cache_folder, filename)
+        cache_path = os.path.join(self.CACHE_FOLDER, filename)
 
         if os.path.exists(cache_path):
             return cache_path
@@ -96,25 +97,33 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         return cache_path
 
     # helper for humanizing duration in ms
-    def _parse_duration(self, ms: int):
+    def _parse_duration(self, ms: int, short: bool = False) -> str:
         hours, ms = divmod(ms, 3600000)
         minutes, ms = divmod(ms, 60000)
         seconds = float(ms) / 1000
-        duration = ''
-        if hours:
-            duration += f'{hours:.0f}h'
-        if minutes:
-            duration += f' {minutes:.0f}m'
-        if seconds:
-            duration += f' {seconds:.0f}s'
 
-        return duration
+        if short:
+            if hours:
+                return f'{hours:.0f}:{minutes:.0f}:{seconds:2.0f}'
+            if minutes:
+                return f'{minutes:.0f}:{seconds:2.0f}'
+            if seconds:
+                return f'{seconds:2.0f}'
+        else:
+            duration = ''
+            if hours:
+                duration += f'{hours:.0f}h'
+            if minutes:
+                duration += f' {minutes:.0f}m'
+            if seconds:
+                duration += f' {seconds:.0f}s'
+            return duration
 
     # a wrapper helper to generate an item
     def _generate_item(self, title: str = '', desc: str = '', icon: str = '', small: bool = False,
                        action: Union[dict, BaseAction] = DoNothingAction(),
                        alt_action: Union[dict, BaseAction] = DoNothingAction(),
-                       keep_open: bool = False, selected: bool = False, ):
+                       keep_open: bool = False) -> Union[ExtensionResultItem, ExtensionSmallResultItem]:
 
         if isinstance(action, dict):
             action['_keep_app_open'] = keep_open
@@ -132,11 +141,12 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                     description=desc.replace('&', '&#38;') if desc else '',
                     icon=icon if icon else self.icons['main'],
                     on_enter=action if action else DoNothingAction(),
-                    on_alt_enter=alt_action if alt_action else DoNothingAction(),
-                    selected_by_default=selected)
+                    on_alt_enter=alt_action if alt_action else DoNothingAction())
 
     # helper for the currently playing entries
-    def _generate_now_playing_menu(self, currently_playing: dict = None, next: bool = True, prev: bool = True):
+    def _generate_now_playing_menu(self, currently_playing: dict = None,
+                                   next: bool = True, prev: bool = True):
+
         if not currently_playing:
             currently_playing = self.api.current_playback()
 
@@ -150,10 +160,13 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         device_playing_on_name = currently_playing['device']['name']
         is_playing = currently_playing['is_playing']
         status = 'Playing' if is_playing else 'Paused'
+        track_progress = self._parse_duration(currently_playing['progress_ms'], short=True)
+        track_duration = self._parse_duration(currently_playing['item']['duration_ms'], short=True)
 
         items = [self._generate_item(f'{artists} -- {song_name}',
                                      f'Album: {album_name} | '
-                                     f'{status} on: {device_playing_on_type} {device_playing_on_name}',
+                                     f'{status} on: {device_playing_on_type} {device_playing_on_name} | '
+                                     f'{track_progress}/{track_duration}',
                                      self.icons['pause'] if is_playing else self.icons['play'],
                                      action={'command': 'pause' if is_playing else 'play'},
                                      keep_open=True if not is_playing else False)]
@@ -174,7 +187,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         return items
 
     # another helper to render items or a single item
-    def _render(self, i: Union[list, ExtensionResultItem]):
+    def _render(self, i: Union[list, ExtensionResultItem]) -> RenderResultListAction:
         if isinstance(i, list):
             return RenderResultListAction(i)
         elif isinstance(i, ExtensionResultItem):
@@ -183,7 +196,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
     # distribute events to proper listeners
     def on_event(self, event, extension):
         if extension is not self:
-            raise RuntimeError('Something is wrong, there might be another copy??')
+            raise RuntimeError('Something is very wrong.')
         if isinstance(event, KeywordQueryEvent):
             return self.on_keyword_query(event.get_keyword(), event.get_argument())
         if isinstance(event, ItemEnterEvent):
@@ -198,7 +211,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
     def on_keyword_query(self, keyword: str, argument: str):
 
-        # if user is not authorized => go through authorization flow
+        # if user is not authorized or no cached token => go through authorization flow and get the tokens
         if self.api.auth_manager.get_cached_token() is None:
             return self._render(self._generate_item(title='Authorization',
                                                     desc='Authorize the extension with your Spotify account',
@@ -207,7 +220,11 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         # if user has a query => process the query
         if argument:
             command, *components = argument.split()
-            logger.debug(f'Recognized query {argument}, split into command {command} and components {components}')
+            logger.debug(f'Recognized query "{argument}", split into command "{command}" and components "{components}"')
+
+            if command in self.aliases:
+                logger.debug(f'Command {command} is an alias for {self.aliases[command]}')
+                command = self.aliases[command]
 
             if command == 'switch':
                 logger.debug(f'Playback transfer')
@@ -233,7 +250,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                                             action=HideWindowAction()))
 
             elif command in ['album', 'track', 'artist', 'playlist', 'search']:
-                logger.debug(f'Search and play')
+                logger.debug(f'Searching')
 
                 if len(components) == 0:
                     examples = {
@@ -257,9 +274,11 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
                 if command == 'search':
                     type_search = 'album,track,artist,playlist'
+                    # TODO preferences make query limit customizable
                     limit = 2
                 else:
                     type_search = command
+                    # TODO preferences make query limit customizable
                     limit = 7
 
                 query = ' '.join(components)
@@ -296,6 +315,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         name = res['name']
                         popularity = res['popularity']
                         genres = ', '.join(res['genres']).capitalize()
+                        genres_output = f' | {genres}' if genres else ''
                         if 'images' in res and res['images']:
                             smallest_img = min(res['images'], key=lambda x: x['height'])
                             img = self._dl_image(smallest_img['url'])
@@ -303,7 +323,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                             img = self.icons['main']
 
                         title = f'{name}'
-                        desc = f'Artist | {genres} | Popularity {popularity}%'
+                        desc = f'Artist{genres_output} | Popularity {popularity}%'
 
                     elif category == 'track':
                         artists = res['artists'][0]['name']
@@ -436,16 +456,12 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         logger.debug(f'Received command {command} ({data})')
 
         try:
-
             if command == 'auth':
                 try:
-                    user = self.api.current_user()
-                    if user:
-                        self._show_notification(f'You are now authenticated, {user["display_name"]}')
-                        return
+                    self.api.auth_manager.get_access_token()
+                    return
                 except spotipy.SpotifyOauthError as e:
                     logger.debug(f'Could not authenticate', e)
-                    self.show_notification(f'{e}')
                     return
 
             elif command == 'pause':
@@ -501,7 +517,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
             if keep_open:
                 # very ugly hack :(
-                time.sleep(0.3)
+                time.sleep(0.5)
                 # Spotify api is asynchronous and without this,
                 # there might be a discrepancy in what's currently playing.
                 # For example, you press next, the request to skip is sent and successfully acknowledged (http 204)
