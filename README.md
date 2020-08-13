@@ -54,6 +54,9 @@ when access token is expired)
 
 Feature roadmap
 --------------------------
+- Shortcuts helper (`sp ?`)
+- History / recently played (`sp history`)
+- Spotify volume / mute (`sp vol N`, `sp mute`)
 - Expose different settings in ulauncher preferences (check TODOs in code)
 - Podcasts functionality (`sp podcast`)
 - Start a radio based on currently playing track (`sp radio`)
