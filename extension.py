@@ -151,7 +151,9 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             currently_playing = self.api.current_playback()
 
         if not currently_playing or not currently_playing['item']:
-            return None
+            return self._render(self._generate_item('Nothing is playing at this moment',
+                                                    'Start playing first',
+                                                    action=HideWindowAction()))
 
         artists = ', '.join([artist['name'] for artist in currently_playing['item']['artists']])
         song_name = currently_playing['item']['name']
@@ -207,7 +209,6 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
     def on_system_exit(self):
         logger.debug(f'Received system exit event, clearing image cache')
         return self._clear_cache()
-        pass
 
     def on_keyword_query(self, keyword: str, argument: str):
 
