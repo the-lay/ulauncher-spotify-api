@@ -20,8 +20,9 @@ Installation
 Ulauncher does not support extension's `requirements.txt`,
 although [it's in the roadmap](https://github.com/Ulauncher/Ulauncher/issues/273).
 For now, you have to manually install dependencies listed in the requirements file on your systems Python installation
-(or the one ulauncher uses). This can be done with pip, for example `pip3 install -r requirements.txt`
+(or the one ulauncher uses). This is the command to install the current requirements:
 
+`pip3 install -e git+git://github.com/plamere/spotipy@004df7b#egg=spotipy`
 
 Next, you have to add the extension to the ulauncher: open Preferences, press Add extension and enter the link to this
 repository: `https://github.com/the-lay/ulauncher-spotify-api`.
