@@ -17,10 +17,19 @@ import random
 import shutil
 from urllib.parse import urlparse
 from typing import Union
+import subprocess
+import sys
 
-import spotipy
-from spotipy.oauth2 import SpotifyPKCE
-import requests
+try:
+    import spotipy
+    from spotipy.oauth2 import SpotifyPKCE
+    import requests
+except ImportError:
+    subprocess.call([sys.executable, '-m', 'pip', 'install', '--user', '-r',
+                     os.path.join(os.path.dirname(__file__), 'requirements.txt')])
+    import spotipy
+    from spotipy.oauth2 import SpotifyPKCE
+    import requests
 
 
 logger = logging.getLogger(__name__)
