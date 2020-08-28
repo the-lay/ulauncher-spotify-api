@@ -19,10 +19,10 @@ Installation
 --------------------------
 Ulauncher does not support extension's `requirements.txt`,
 although [it's in the roadmap](https://github.com/Ulauncher/Ulauncher/issues/273).
-For now, you have to manually install dependencies listed in the requirements file on your systems Python installation
-(or the one ulauncher uses). This is the command to install the current requirements:
 
-`pip3 install -e git+git://github.com/plamere/spotipy@004df7b#egg=spotipy`
+On the first run, the extension will try to install requirements automatically.
+In case that fails, please install it manually:
+`pip3 install -r requirements.txt`
 
 Next, you have to add the extension to the ulauncher: open Preferences, press Add extension and enter the link to this
 repository: `https://github.com/the-lay/ulauncher-spotify-api`.
@@ -52,11 +52,11 @@ when access token is expired)
 - Alt-enter to add track to queue instead of playing now
 - PKCE authentication (need to specify spotipy commit for now, should bump the version to a release once PKCE is added)
 - Aliases for commands (`sp song` is the same as `sp track`, `sp s` is the same as `sp search`)
+- Help dialogue (`sp ?` or `sp help`)
+- History / recently played songs (`sp history`)
 
 Feature roadmap
 --------------------------
-- Shortcuts helper (`sp ?`)
-- History / recently played (`sp history`)
 - Spotify volume / mute (`sp vol N`, `sp mute`)
 - Expose different settings in ulauncher preferences (check TODOs in code)
 - Podcasts functionality (`sp podcast`)

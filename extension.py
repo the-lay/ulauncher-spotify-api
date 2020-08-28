@@ -56,7 +56,6 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         # icons
         self.icons = {
             'main': os.path.join(os.path.dirname(__file__), 'images/icon.png'),
-            'notification': os.path.join(os.path.dirname(__file__), 'images/icon_black.png'),
             'play': os.path.join(os.path.dirname(__file__), 'images/play.png'),
             'pause': os.path.join(os.path.dirname(__file__), 'images/pause.png'),
             'next': os.path.join(os.path.dirname(__file__), 'images/next.png'),
@@ -65,7 +64,13 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             'repeat_context': os.path.join(os.path.dirname(__file__), 'images/repeat_context.png'),
             'repeat_track': os.path.join(os.path.dirname(__file__), 'images/repeat_track.png'),
             'shuffle': os.path.join(os.path.dirname(__file__), 'images/shuffle_on.png'),
-            'no_shuffle': os.path.join(os.path.dirname(__file__), 'images/shuffle_off.png')
+            'no_shuffle': os.path.join(os.path.dirname(__file__), 'images/shuffle_off.png'),
+            'question': os.path.join(os.path.dirname(__file__), 'images/question.png'),
+            'track': os.path.join(os.path.dirname(__file__), 'images/track.png'),
+            'album': os.path.join(os.path.dirname(__file__), 'images/album.png'),
+            'playlist': os.path.join(os.path.dirname(__file__), 'images/playlist.png'),
+            'artist': os.path.join(os.path.dirname(__file__), 'images/artist.png'),
+            'search': os.path.join(os.path.dirname(__file__), 'images/search.png')
         }
 
         # create cache folder
@@ -77,7 +82,8 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         # TODO preferences modify aliases
         self.aliases = {
             's': 'search',
-            'song': 'track'
+            'song': 'track',
+            '?': 'help'
         }
 
         # spotipy - spotify api client
@@ -113,11 +119,8 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
         if short:
             if hours:
-                return f'{hours:.0f}:{minutes:.0f}:{seconds:2.0f}'
-            if minutes:
-                return f'{minutes:.0f}:{seconds:2.0f}'
-            if seconds:
-                return f'{seconds:2.0f}'
+                return f'{hours:.0f}:{minutes:02.0f}:{seconds:02.0f}'
+            return f'{minutes:.0f}:{seconds:02.0f}'
         else:
             duration = ''
             if hours:
@@ -157,30 +160,49 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                    next: bool = True, prev: bool = True):
 
         if not currently_playing:
-            currently_playing = self.api.current_playback()
+            currently_playing = self.api._get("me/player", market=None, additional_types='episode')
 
         if not currently_playing or not currently_playing['item']:
-            return self._render(self._generate_item('Nothing is playing at this moment',
-                                                    'Start playing first',
-                                                    action=HideWindowAction()))
+            return self._generate_item('Nothing is playing at this moment',
+                                       'Start playing first',
+                                       action=HideWindowAction())
 
-        artists = ', '.join([artist['name'] for artist in currently_playing['item']['artists']])
-        song_name = currently_playing['item']['name']
-        album_name = currently_playing['item']['album']['name']
-        device_playing_on_type = currently_playing['device']['type'].lower()
-        device_playing_on_name = currently_playing['device']['name']
-        is_playing = currently_playing['is_playing']
-        status = 'Playing' if is_playing else 'Paused'
-        track_progress = self._parse_duration(currently_playing['progress_ms'], short=True)
-        track_duration = self._parse_duration(currently_playing['item']['duration_ms'], short=True)
+        if currently_playing['currently_playing_type'] == 'track':
+            artists = ', '.join([artist['name'] for artist in currently_playing['item']['artists']])
+            song_name = currently_playing['item']['name']
+            album_name = currently_playing['item']['album']['name']
+            device_playing_on_type = currently_playing['device']['type'].lower()
+            device_playing_on_name = currently_playing['device']['name']
+            is_playing = currently_playing['is_playing']
+            status = 'Playing' if is_playing else 'Paused'
+            track_progress = self._parse_duration(currently_playing['progress_ms'], short=True)
+            track_duration = self._parse_duration(currently_playing['item']['duration_ms'], short=True)
 
-        items = [self._generate_item(f'{artists} -- {song_name}',
-                                     f'Album: {album_name} | '
-                                     f'{status} on: {device_playing_on_type} {device_playing_on_name} | '
-                                     f'{track_progress}/{track_duration}',
-                                     self.icons['pause'] if is_playing else self.icons['play'],
-                                     action={'command': 'pause' if is_playing else 'play'},
-                                     keep_open=True if not is_playing else False)]
+            items = [self._generate_item(f'{artists} -- {song_name}',
+                                         f'Album: {album_name} | '
+                                         f'{status} on: {device_playing_on_type} {device_playing_on_name} | '
+                                         f'{track_progress}/{track_duration}',
+                                         self.icons['pause'] if is_playing else self.icons['play'],
+                                         action={'command': 'pause' if is_playing else 'play'},
+                                         keep_open=True if not is_playing else False)]
+
+        elif currently_playing['currently_playing_type'] == 'episode':
+            show = currently_playing['item']['show']['name']
+            episode = currently_playing['item']['name']
+            device_playing_on_type = currently_playing['device']['type'].lower()
+            device_playing_on_name = currently_playing['device']['name']
+            is_playing = currently_playing['is_playing']
+            status = 'Playing' if is_playing else 'Paused'
+            episode_progress = self._parse_duration(currently_playing['progress_ms'], short=True)
+            episode_duration = self._parse_duration(currently_playing['item']['duration_ms'], short=True)
+
+            items = [self._generate_item(f'{episode}',
+                                         f'{show} | '
+                                         f'{status} on: {device_playing_on_type} {device_playing_on_name} | '
+                                         f'{episode_progress}/{episode_duration}',
+                                         self.icons['pause'] if is_playing else self.icons['play'],
+                                         action={'command': 'pause' if is_playing else 'play'},
+                                         keep_open=True if not is_playing else False)]
 
         if next:
             items.append(self._generate_item('Next track',
@@ -250,7 +272,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
                         items.append(self._generate_item(title=f'Switch playback to {device_type} {device_name}',
                                                          desc=f'{current}Device id: {device_id}',
-                                                         icon=self.icons['play'],
+                                                         icon=self.icons['play'],  # TODO switch icon
                                                          action={'command': 'switch',
                                                                  'device_id': device_id}))
                     return self._render(items)
@@ -336,7 +358,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         desc = f'Artist{genres_output} | Popularity {popularity}%'
 
                     elif category == 'track':
-                        artists = res['artists'][0]['name']
+                        artists = ', '.join([artist['name'] for artist in res['artists']])
                         name = res['name']
                         album_name = res['album']['name']
                         popularity = res['popularity']
@@ -432,8 +454,78 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                                      keep_open=False))
                 return self._render(items)
 
+            elif command == 'history':
+                history = self.api.current_user_recently_played(limit=8)
+                if not history['items']:
+                    return self._render(self._generate_item('No previously played songs found',
+                                                            'Maybe an API bug?', icon=self.icons['question'],
+                                                            action=HideWindowAction()))
+
+                items = []
+                for res in history['items']:
+                    track = res['track']
+                    uri = track['uri']
+
+                    track_name = track['name']
+                    album_name = track['album']['name']
+                    artists = ', '.join([artist['name'] for artist in track['artists']])
+                    popularity = track['popularity']
+                    duration = self._parse_duration(track['duration_ms'])
+                    if 'images' in track['album'] and track['album']['images']:
+                        smallest_img = min(track['album']['images'], key=lambda x: x['height'])
+                        img = self._dl_image(smallest_img['url'])
+                    else:
+                        img = self.icons['main']
+
+                    title = f'{artists} -- {track_name}'
+                    desc = f'Track | {duration} | Popularity {popularity}% | {album_name}'
+                    alt_action = {'command': 'queue', 'uri': uri}
+                    uri = [uri]
+
+                    items.append(self._generate_item(title, desc, img,
+                                                     action={'command': 'play',
+                                                             'uris': uri},
+                                                     alt_action=alt_action,
+                                                     keep_open=False))
+
+                return self._render(items)
+
+            elif command == 'help':
+                items = [
+                    self._generate_item(f'This help menu: {keyword} help',
+                                        icon=self.icons['question'], small=True),
+                    self._generate_item(f'Switch playback between devices: {keyword} switch',
+                                        icon=self.icons['main'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} switch')),  # TODO switch icon
+                    self._generate_item(f'Change repeat state: {keyword} repeat',
+                                        icon=self.icons['repeat_context'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} repeat')),
+                    self._generate_item(f'Change shuffle state: {keyword} shuffle',
+                                        icon=self.icons['shuffle'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} shuffle')),
+                    self._generate_item(f'Search for a track: {keyword} track -your-query-',
+                                        icon=self.icons['track'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} track ')),
+                    self._generate_item(f'Search for an album: {keyword} album -your-query-',
+                                        icon=self.icons['album'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} album ')),
+                    self._generate_item(f'Search for an artist: {keyword} artist -your-query-',
+                                        icon=self.icons['artist'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} artist ')),
+                    self._generate_item(f'Search for a playlist: {keyword} playlist -your-query-',
+                                        icon=self.icons['playlist'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} playlist ')),
+                    self._generate_item(f'General search: {keyword} search -your-query-',
+                                        icon=self.icons['search'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} search ')),
+                    self._generate_item(f'Recently played tracks: {keyword} history',
+                                        icon=self.icons['play'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} history')),
+                ]
+                return self._render(items)
+
         # no query, but something is playing currently => show now playing menu
-        current_playback = self.api.current_playback()
+        current_playback = self.api._get("me/player", market=None, additional_types='episode')
         if current_playback:
             return self._render(self._generate_now_playing_menu(current_playback))
 
