@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
     CLIENT_ID = '1f3a663c5fdd4056b4c0e122ea55a3af'
-    SCOPES = 'user-modify-playback-state user-read-playback-state'
+    SCOPES = 'user-modify-playback-state user-read-playback-state user-read-recently-played'
     CACHE_FOLDER = os.path.join(os.path.dirname(__file__), 'cache')
     ACCESS_TOKEN_CACHE = os.path.join(os.path.dirname(__file__), 'cache.json')
     REDIRECT_URI = 'http://127.0.0.1:8080' # TODO preferences modify port
