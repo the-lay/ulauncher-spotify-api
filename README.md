@@ -6,6 +6,7 @@ ulauncher-spotify-api
 
 *Note: some playback features are allowed only for Spotify Premium subscribers (see `Known issues` below).*
 
+
 Motivation
 --------------------------
 There's a great Ulauncher extension [pywkm/ulauncher-spotify](https://github.com/pywkm/ulauncher-spotify).
@@ -14,6 +15,7 @@ However, ulauncher-spotify uses dbus to control Spotify, exposing very limited n
 In contrast, this extension makes use of Spotify's [Web API](https://developer.spotify.com/documentation/web-api/)
 through which it is possible to use almost all Spotify features. The aim is to provide direct access to most features
 that make sense for a command runner.
+
 
 Installation
 --------------------------
@@ -50,19 +52,21 @@ when access token is expired)
 - Search without specifying a type (`sp search search_query`)
 - Download images to cache folder and show them in search (and clear cache on extension exit)
 - Alt-enter to add track to queue instead of playing now
-- PKCE authentication (need to specify spotipy commit for now, should bump the version to a release once PKCE is added)
+- PKCE authentication
 - Aliases for commands (`sp song` is the same as `sp track`, `sp s` is the same as `sp search`)
 - Help dialogue (`sp ?` or `sp help`)
 - History / recently played songs (`sp history`)
 
+
 Feature roadmap
 --------------------------
 - Spotify volume / mute (`sp vol N`, `sp mute`)
-- Expose different settings in ulauncher preferences (check TODOs in code)
+- Expose different settings in ulauncher preferences (aliases, auth webserver port, request timeout etc.) 
 - Podcasts functionality (`sp podcast`)
 - Start a radio based on currently playing track (`sp radio`)
 
-If you have any suggestions or feel that something is missing, please [open a new issue](TODO).
+If you have any suggestions or feel that something is missing, please
+[open a new issue](https://github.com/the-lay/ulauncher-spotify-api/issues/new).
 
 
 Known issues

@@ -1,2 +1,2 @@
--e git+git://github.com/plamere/spotipy@004df7b#egg=spotipy
+spotipy>=2.14.0
 requests>=2.23.0
