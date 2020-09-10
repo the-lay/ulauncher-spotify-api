@@ -279,7 +279,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 else:
                     return self._render(self._generate_item(title='No active devices running Spotify found',
                                                             desc='Open Spotify on one of your devices first',
-                                                            action=HideWindowAction()))
+                                                            action=SetUserQueryAction('Spotify')))
 
             elif command in ['album', 'track', 'artist', 'playlist', 'search']:
                 logger.debug(f'Searching')
@@ -550,7 +550,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         # no query, nothing is playing, no devices online => prompt to open Spotify anywhere first
         return self._render(self._generate_item('No active devices running Spotify found',
                                                 'Open Spotify on one of your devices first',
-                                                action=HideWindowAction()))
+                                                action=SetUserQueryAction('Spotify')))
 
     def on_item_enter(self, data: dict):
         command = data.get('command', '')
