@@ -53,17 +53,20 @@ when access token is expired)
 - Download images to cache folder and show them in search (and clear cache on extension exit)
 - Alt-enter to add track to queue instead of playing now
 - PKCE authentication
-- Aliases for commands (`sp song` is the same as `sp track`, `sp s` is the same as `sp search`)
+- Aliases for commands (`sp song` = `sp track`, `sp s` = `sp search`, `sp vol` = `sp volume`)
 - Help dialogue (`sp ?` or `sp help`)
 - History / recently played songs (`sp history`)
+- Spotify volume / mute (`sp volume N`)
 
 
 Feature roadmap
 --------------------------
-- Spotify volume / mute (`sp vol N`, `sp mute`)
 - Expose different settings in ulauncher preferences (aliases, auth webserver port, request timeout etc.) 
 - Podcasts functionality (`sp podcast`)
 - Start a radio based on currently playing track (`sp radio`)
+- Add an option to make image cache persistent, but with a manual flush cache button
+
+There might be more TODO in [github issues](https://github.com/the-lay/ulauncher-spotify-api/issues/).
 
 If you have any suggestions or feel that something is missing, please
 [open a new issue](https://github.com/the-lay/ulauncher-spotify-api/issues/new).

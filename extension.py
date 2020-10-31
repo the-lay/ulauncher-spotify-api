@@ -41,7 +41,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
     SCOPES = 'user-modify-playback-state user-read-playback-state user-read-recently-played'
     CACHE_FOLDER = os.path.join(os.path.dirname(__file__), 'cache')
     ACCESS_TOKEN_CACHE = os.path.join(os.path.dirname(__file__), 'cache.json')
-    REDIRECT_URI = 'http://127.0.0.1:8080' # TODO preferences modify port
+    REDIRECT_URI = 'http://127.0.0.1:8080'  # TODO preferences modify port
 
     def __init__(self):
         super(UlauncherSpotifyAPIExtension, self).__init__()
@@ -70,7 +70,9 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             'album': os.path.join(os.path.dirname(__file__), 'images/album.png'),
             'playlist': os.path.join(os.path.dirname(__file__), 'images/playlist.png'),
             'artist': os.path.join(os.path.dirname(__file__), 'images/artist.png'),
-            'search': os.path.join(os.path.dirname(__file__), 'images/search.png')
+            'search': os.path.join(os.path.dirname(__file__), 'images/search.png'),
+            'devices': os.path.join(os.path.dirname(__file__), 'images/devices.png'),
+            'volume': os.path.join(os.path.dirname(__file__), 'images/volume.png')
         }
 
         # create cache folder
@@ -83,6 +85,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         self.aliases = {
             's': 'search',
             'song': 'track',
+            'vol': 'volume',
             '?': 'help'
         }
 
@@ -149,7 +152,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         else:
             item = ExtensionResultItem
 
-        return item(name=title.replace('&', '&#38;') if title else '',
+        return item(name=title,
                     description=desc.replace('&', '&#38;') if desc else '',
                     icon=icon if icon else self.icons['main'],
                     on_enter=action if action else DoNothingAction(),
@@ -160,7 +163,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                    next: bool = True, prev: bool = True):
 
         if not currently_playing:
-            currently_playing = self.api._get("me/player", market=None, additional_types='episode')
+            currently_playing = self.api.current_playback(additional_types='episode')
 
         if not currently_playing or not currently_playing['item']:
             return self._generate_item('Nothing is playing at this moment',
@@ -455,6 +458,8 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 return self._render(items)
 
             elif command == 'history':
+                logger.debug(f'History')
+
                 history = self.api.current_user_recently_played(limit=8)
                 if not history['items']:
                     return self._render(self._generate_item('No previously played songs found',
@@ -490,13 +495,62 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
                 return self._render(items)
 
+            elif command == 'volume':
+                logger.debug(f'Volume controls')
+
+                current_volume = self.api.current_playback(additional_types='episode')
+                if not current_volume:
+                    return self._render(self._generate_item(f'Can not set volume when nothing is playing',
+                                                            icon=self.icons['volume'],
+                                                            action=HideWindowAction()))
+                current_volume = current_volume['device']['volume_percent']
+
+                if len(components) == 0:
+                    items = [self._generate_item(f'Current volume: {current_volume}%',
+                                                 small=True, icon=self.icons['volume'],
+                                                 action=DoNothingAction()),
+                             self._generate_item(f'Mute: 0% volume',
+                                                 small=True,
+                                                 icon=self.icons['volume'],  # TODO mute icon
+                                                 action={'command': 'volume',
+                                                         'state': 0}),
+                             self._generate_item(f'Full volume: 100% volume',
+                                                 small=True, icon=self.icons['volume'],
+                                                 action={'command': 'volume',
+                                                         'state': 100})]
+
+                    return self._render(items)
+                else:
+                    try:
+                        requested_volume = int(components[0])
+                    except ValueError:
+                        return self._render(self._generate_item(f'The volume must be from 0 to 100',
+                                                                f'0 = mute; 100 = full volume',
+                                                                icon=self.icons['volume'],
+                                                                action=SetUserQueryAction(f'{keyword} volume')))
+
+                    logger.debug(f'Interpreting "{components}" input as {requested_volume}')
+                    if (requested_volume < 0) or (requested_volume > 100):
+                        return self._render(self._generate_item(f'The volume must be from 0 to 100',
+                                                                f'0 = mute; 100 = full volume',
+                                                                icon=self.icons['volume'],
+                                                                action=SetUserQueryAction(f'{keyword} volume')))
+
+                    return self._render(self._generate_item(f'Set volume to {requested_volume}%',
+                                                            icon=self.icons['volume'],
+                                                            action={'command': 'volume',
+                                                                    'state': requested_volume}))
+
             elif command == 'help':
                 items = [
                     self._generate_item(f'This help menu: {keyword} help',
                                         icon=self.icons['question'], small=True),
                     self._generate_item(f'Switch playback between devices: {keyword} switch',
-                                        icon=self.icons['main'], small=True,
-                                        action=SetUserQueryAction(f'{keyword} switch')),  # TODO switch icon
+                                        icon=self.icons['devices'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} switch')),
+                    self._generate_item(f'Change playback volume: {keyword} volume',
+                                        icon=self.icons['volume'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} volume')),
                     self._generate_item(f'Change repeat state: {keyword} repeat',
                                         icon=self.icons['repeat_context'], small=True,
                                         action=SetUserQueryAction(f'{keyword} repeat')),
@@ -525,7 +579,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 return self._render(items)
 
         # no query, but something is playing currently => show now playing menu
-        current_playback = self.api._get("me/player", market=None, additional_types='episode')
+        current_playback = self.api.current_playback(additional_types='episode')
         if current_playback:
             return self._render(self._generate_now_playing_menu(current_playback))
 
@@ -610,6 +664,11 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 state = data.get('state', 'off')
                 logger.debug(f'Setting repeat to {state}')
                 self.api.repeat(state)
+
+            elif command == 'volume':
+                state = data.get('state', 0)
+                logger.debug(f'Setting volume to {state}')
+                self.api.volume(state)
 
             else:
                 logger.debug('No handler for this command...')
