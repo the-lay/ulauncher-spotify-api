@@ -152,7 +152,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         else:
             item = ExtensionResultItem
 
-        return item(name=title,
+        return item(name=title.replace('&', '&#38;') if title else '',
                     description=desc.replace('&', '&#38;') if desc else '',
                     icon=icon if icon else self.icons['main'],
                     on_enter=action if action else DoNothingAction(),
