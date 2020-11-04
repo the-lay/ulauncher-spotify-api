@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
     CLIENT_ID = '1f3a663c5fdd4056b4c0e122ea55a3af'
-    SCOPES = 'user-modify-playback-state user-read-playback-state user-read-recently-played'
+    SCOPES = 'user-modify-playback-state user-read-playback-state user-read-recently-played user-library-modify'
     CACHE_FOLDER = os.path.join(os.path.dirname(__file__), 'cache')
     ACCESS_TOKEN_CACHE = os.path.join(os.path.dirname(__file__), 'cache.json')
     REDIRECT_URI = 'http://127.0.0.1:8080'  # TODO preferences modify port
@@ -72,7 +72,8 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             'artist': os.path.join(os.path.dirname(__file__), 'images/artist.png'),
             'search': os.path.join(os.path.dirname(__file__), 'images/search.png'),
             'devices': os.path.join(os.path.dirname(__file__), 'images/devices.png'),
-            'volume': os.path.join(os.path.dirname(__file__), 'images/volume.png')
+            'volume': os.path.join(os.path.dirname(__file__), 'images/volume.png'),
+            'save': os.path.join(os.path.dirname(__file__), 'images/save.png'),
         }
 
         # create cache folder
@@ -86,6 +87,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             's': 'search',
             'song': 'track',
             'vol': 'volume',
+            'like': 'save',
             '?': 'help'
         }
 
@@ -541,6 +543,27 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                                             action={'command': 'volume',
                                                                     'state': requested_volume}))
 
+            elif command == 'save':
+                logger.debug(f'Saving track')
+
+                current_track = self.api.current_playback(additional_types='episode')
+                if not current_track:
+                    return self._render(self._generate_item(f'Can not save a song when nothing is playing',
+                                                            icon=self.icons['save'],
+                                                            action=HideWindowAction()))
+                if current_track['currently_playing_type'] != 'track':
+                    return self._render(self._generate_item(f'You can save only tracks',
+                                                            icon=self.icons['save'],
+                                                            action=HideWindowAction()))
+
+                artists = ', '.join([artist['name'] for artist in current_track['item']['artists']])
+                song_name = current_track['item']['name']
+                song_uri = current_track['item']['uri']
+                return self._render(self._generate_item(f'Save {artists} -- {song_name} to your Liked Songs',
+                                                        icon=self.icons['save'],
+                                                        action={'command': 'save_tracks',
+                                                                'state': [song_uri]}))
+
             elif command == 'help':
                 items = [
                     self._generate_item(f'This help menu: {keyword} help',
@@ -551,6 +574,9 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                     self._generate_item(f'Change playback volume: {keyword} volume',
                                         icon=self.icons['volume'], small=True,
                                         action=SetUserQueryAction(f'{keyword} volume')),
+                    self._generate_item(f'Save currently playing song to your Liked Songs: {keyword} save',
+                                        icon=self.icons['save'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} save')),
                     self._generate_item(f'Change repeat state: {keyword} repeat',
                                         icon=self.icons['repeat_context'], small=True,
                                         action=SetUserQueryAction(f'{keyword} repeat')),
@@ -669,6 +695,11 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 state = data.get('state', 0)
                 logger.debug(f'Setting volume to {state}')
                 self.api.volume(state)
+
+            elif command == 'save_tracks':
+                state = data.get('state', [])
+                logger.debug(f'Saving tracks {state}')
+                self.api.current_user_saved_tracks_add(state)
 
             else:
                 logger.debug('No handler for this command...')
