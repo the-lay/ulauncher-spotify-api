@@ -6,6 +6,9 @@ ulauncher-spotify-api
 
 *Note: some playback features are allowed only for Spotify Premium subscribers (see `Known issues` below).*
 
+Available commands
+--------------------------
+![Commands](available_commands.png)
 
 Motivation
 --------------------------
