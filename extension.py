@@ -162,7 +162,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
     # helper for the currently playing entries
     def _generate_now_playing_menu(self, currently_playing: dict = None,
-                                   next: bool = True, prev: bool = True):
+                                   next: bool = True, prev: bool = True, help: bool = True):
 
         if not currently_playing:
             currently_playing = self.api.current_playback(additional_types='episode')
@@ -222,6 +222,12 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                              self.icons['prev'],
                                              action={'command': 'prev'},
                                              keep_open=True))
+
+        if help: # TODO: allow to remove help entry in extension preferences
+            items.append(self._generate_item('Extension cheatsheet',
+                                             'List of all available commands',
+                                             self.icons['question'],
+                                             action=SetUserQueryAction(f'sp help')))
         return items
 
     # another helper to render items or a single item
