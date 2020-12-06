@@ -565,7 +565,8 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 artists = ', '.join([artist['name'] for artist in current_track['item']['artists']])
                 song_name = current_track['item']['name']
                 song_uri = current_track['item']['uri']
-                return self._render(self._generate_item(f'Save {artists} -- {song_name} to your Liked Songs',
+                return self._render(self._generate_item(f'{artists} -- {song_name}',
+                                                        desc='Add to your Liked Songs',
                                                         icon=self.icons['save'],
                                                         action={'command': 'save_tracks',
                                                                 'state': [song_uri]}))
