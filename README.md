@@ -22,15 +22,14 @@ that make sense for a command runner.
 
 Installation
 --------------------------
-Ulauncher does not support extension's `requirements.txt`,
-although [it's in the roadmap](https://github.com/Ulauncher/Ulauncher/issues/273).
+Please use the default way to install ulauncher extensions:
+`Preferences -> Extensions -> Add extension -> https://github.com/the-lay/ulauncher-spotify-api`.
+On the first run, the extension will try to automatically install the dependencies.
 
-On the first run, the extension will try to install requirements automatically.
-In case that fails, please install it manually:
-`pip3 install -r requirements.txt`
-
-Next, you have to add the extension to the ulauncher: open Preferences, press Add extension and enter the link to this
-repository: `https://github.com/the-lay/ulauncher-spotify-api`.
+For various reasons (hardened permissions, non-standard installations...) automatic installation can fail, 
+and the ulauncher will report something along the lines of `ModuleNotFoundError: No module named 'spotipy'`.
+In that case, you have to install dependencies manually:
+`pip3 install "spotipy>=2.16.1" "requests>=2.23.0"` and then try to reinstall the extension.
 
 Extension's default keyword is `sp`. When you use the extension for the first time, you will have to
 go through OAuth authentication and allow access to your Spotify account.
