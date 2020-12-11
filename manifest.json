@@ -12,8 +12,53 @@
       "id": "main_keyword",
       "type": "keyword",
       "name": "Ulauncher Spotify API",
-      "description": "Control Spotify from Ulauncher",
+      "description": "Specify the keyword that triggers the extension.",
       "default_value": "sp"
+    },
+    {
+      "id": "auth_port",
+      "type": "select",
+      "name": "Authentication port",
+      "description": "As a part of authentication process, extension must accept access token from Spotify with a tiny local webserver.\nIf the default port (8080) is already in use, please select another port.",
+      "default_value": "8080",
+      "options": ["8080", "5000", "5050", "6666"]
+    },
+    {
+      "id": "clear_cache",
+      "type": "select",
+      "name": "Clear image cache on exit",
+      "description": "If set to yes, downloaded image cache will be cleared upon exiting Ulauncher.",
+      "default_value": "No",
+      "options": ["No", "Yes"]
+    },
+    {
+      "id": "show_help",
+      "type": "select",
+      "name": "Show extension cheatsheet in the default view",
+      "description": "Show extension cheatsheet entry next to Now Playing, Next track and Previous track.",
+      "default_value": "Yes",
+      "options": ["No", "Yes"]
+    },
+    {
+      "id": "aliases",
+      "type": "text",
+      "name": "Custom aliases",
+      "description": "Specify custom aliases. Example format: alias1: command1; alias2: command2. Please pay attention to the spaces.",
+      "default_value": "s: search; song: track; vol: volume; like: save; ?: help"
+    },
+    {
+      "id": "search_results_limit",
+      "type": "text",
+      "name": "Search results limit",
+      "description": "How many results to request from Spotify. General search (sp search) will return ceil(limit / 4) results for each of 4 categories.",
+      "default_value": "8"
+    },
+    {
+      "id": "request_timeout",
+      "type": "text",
+      "name": "Request timeout",
+      "description": "Specifies how long to wait before requesting now playing songs If you have bad internet connection, you can increase this value, otherwise it is not recommended to change this value.",
+      "default_value": "0.5"
     }
   ]
 }

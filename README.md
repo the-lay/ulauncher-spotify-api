@@ -4,7 +4,7 @@ ulauncher-spotify-api
 
 ![Demo gif](demo/demo.gif)
 
-*Note: some playback features are allowed only for Spotify Premium subscribers (see `Known issues` below).*
+*Note: some playback features are allowed only for Spotify Premium subscribers (see `Troubleshooting` below).*
 
 Available commands
 --------------------------
@@ -67,10 +67,8 @@ when access token is expired)
 
 Feature roadmap
 --------------------------
-- Expose different settings in ulauncher preferences (aliases, auth webserver port, request timeout etc.) 
 - Podcasts functionality (`sp podcast`)
 - Start a radio based on currently playing track (`sp radio`)
-- Add an option to make image cache persistent, but with a manual flush cache button
 
 There might be more TODO in [github issues](https://github.com/the-lay/ulauncher-spotify-api/issues/).
 
@@ -78,10 +76,10 @@ If you have any suggestions or feel that something is missing, please
 [open a new issue](https://github.com/the-lay/ulauncher-spotify-api/issues/new).
 
 
-Known issues
+Troubleshooting
 --------------------------
 - Spotipy's authentication workflow sets up a tiny web server to accept back Spotify's access token.
-By default port 8080 is used. If it is taken, authentication will fail.
+By default port 8080 is used. If it is taken, please select a different one in the extension settings.
 
 - Unfortunately, Spotify does not provide API access for free users for the following actions:
   - Next track (Skip User’s Playback To Next Track)
