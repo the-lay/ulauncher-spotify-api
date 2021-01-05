@@ -627,6 +627,9 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 items = [
                     self._generate_item(f'This help menu: {keyword} help',
                                         icon=self.ICONS['question'], small=True),
+                    self._generate_item(f'Add selected track to queue: Ctrl + Enter',
+                                        icon=self.ICONS['play'], small=True,
+                                        action=HideWindowAction()),
                     self._generate_item(f'Switch playback between devices: {keyword} switch',
                                         icon=self.ICONS['devices'], small=True,
                                         action=SetUserQueryAction(f'{keyword} switch')),
