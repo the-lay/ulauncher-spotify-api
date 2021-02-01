@@ -289,7 +289,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
     def on_preferences(self, preferences: dict):
         logger.debug(f'Received preferences event: {preferences}')
         for p in preferences:
-            self.on_preferences_update(p, preferences[p], self.preferences[p], False)
+            self.on_preferences_update(p, self.preferences[p], preferences[p], False)
 
         self._generate_api()
         self._generate_aliases()
@@ -500,18 +500,18 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 current_shuffle_state = currently_playing.get('shuffle_state')
                 states = [True, False]
                 state_names = ['shuffle', 'do not shuffle']
-                state_ICONS = ['shuffle', 'no_shuffle']
+                state_icons = ['shuffle', 'no_shuffle']
                 current_shuffle_state_index = states.index(current_shuffle_state)
 
                 items = [self._generate_item(f'Current state: {state_names[current_shuffle_state_index]}',
-                                             small=True, icon=self.ICONS[state_ICONS[current_shuffle_state_index]],
+                                             small=True, icon=self.ICONS[state_icons[current_shuffle_state_index]],
                                              action=DoNothingAction())]
 
                 for i in range(len(states)):
                     if i == current_shuffle_state_index:
                         continue
                     items.append(self._generate_item(f'Set to {state_names[i]}',
-                                                     small=True, icon=self.ICONS[state_ICONS[i]],
+                                                     small=True, icon=self.ICONS[state_icons[i]],
                                                      action={'command': 'shuffle',
                                                              'state': states[i]},
                                                      keep_open=False))
@@ -787,8 +787,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
             if e.http_status == 403:
                 return self._render(self._generate_item('Spotify: 403 Forbidden',
-                                                        'Forbidden to access this endpoint'
-                                                        'or state has changed',
+                                                        'Forbidden to access this endpoint or state has changed',
                                                         action=HideWindowAction()))
 
             elif e.http_status == 401:
