@@ -29,11 +29,11 @@ On the first run, the extension will try to automatically install the dependenci
 For various reasons (hardened permissions, non-standard installations...) automatic installation can fail, 
 and the ulauncher will report something along the lines of `ModuleNotFoundError: No module named 'spotipy'`.
 In that case, you have to install dependencies manually:
-`pip3 install "spotipy>=2.16.1" "requests>=2.23.0"` and then try to reinstall the extension.
+`pip3 install "spotipy==2.16.1" "requests==2.23.0"` and then try to reinstall the extension.
 
 In case you have multiple Python environments on your system (PyEnv, Conda etc.),
 please note that you have to install the dependencies to the default system python that Ulauncher uses.
-Most likely this will be the command you want: `/usr/bin/python3 -m pip install "spotipy>=2.16.1" "requests>=2.23.0"`
+Most likely this will be the command you want: `/usr/bin/python3 -m pip install "spotipy==2.16.1" "requests==2.23.0"`
 
 Extension's default keyword is `sp`. When you use the extension for the first time, you will have to
 go through OAuth authentication and allow access to your Spotify account.
