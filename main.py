@@ -1,3 +1,13 @@
+# Fix for #17 (and ulauncher's #703): explicitly defining Gdk version
+import gi
+gi.require_version('GLib', '2.0')
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+gi.require_version('GObject', '2.0')
+gi.require_version('Gio', '2.0')
+gi.require_version('GdkX11', '3.0')
+gi.require_version('GdkPixbuf', '2.0')
+
 from ulauncher.api.client.Extension import Extension # noqa
 from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent, SystemExitEvent # noqa
 from ulauncher.api.shared.event import PreferencesEvent, PreferencesUpdateEvent # noqa

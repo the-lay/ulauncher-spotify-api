@@ -57,7 +57,7 @@
       "id": "request_timeout",
       "type": "text",
       "name": "Request timeout",
-      "description": "Specifies how long to wait before requesting now playing songs If you have bad internet connection, you can increase this value, otherwise it is not recommended to change this value.",
+      "description": "Specifies how long to wait before requesting what's currently playing. If you have an unstable internet connection, try increasing this value.",
       "default_value": "0.5"
     }
   ]
