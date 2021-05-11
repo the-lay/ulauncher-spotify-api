@@ -49,7 +49,7 @@ except ImportError:
 
 
 logger = logging.getLogger(__name__)
-_ = gettext.gettext
+_ = gettext.translation
 
 class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
@@ -79,6 +79,10 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             'volume': os.path.join(os.path.dirname(__file__), 'images/volume.png'),
             'save': os.path.join(os.path.dirname(__file__), 'images/save.png')
     }
+    LANGUAGES = [
+        'de',
+        'en',
+    ]
 
     def __init__(self):
         super(UlauncherSpotifyAPIExtension, self).__init__()
@@ -103,6 +107,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         # in case existing user upgrades and initial preferences are empty
         self.preferences = {
             'main_keyword': 'sp',
+            'language': 'en',
             'auth_port': '8080',
             'clear_cache': 'No',
             'show_help': 'Yes',
@@ -327,6 +332,16 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
         # if user has a query => process the query
         if argument:
+            # Set language
+            language = self.preferences['language']
+            if language != 'en':
+                if language in self.LANGUAGES:
+                    translatator = gettext.translation(domain='base',
+                                            localedir='locales',
+                                            languages=language)
+                    translatator.install()
+
+            # Parse arguments
             command, *components = argument.split()
             logger.debug(f'Recognized query "{argument}", split into command "{command}" and components "{components}"')
 
