@@ -115,7 +115,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         self.aliases = {}
 
     def _generate_api(self):
-        logger.debug(_(f'Generating Spotipy object'))
+        logger.debug('Generating Spotipy object')
         redirect_uri = 'http://127.0.0.1:' + str(self.preferences['auth_port'])
         if int(self.preferences['auth_port']) not in self.POSSIBLE_PORTS:
             logger.debug(_('Port set in the preferences is not one of the supported ports.'))
@@ -344,7 +344,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         device_name = device.get('name', 'device_name')
                         device_id = device.get('id', 'device_id')
                         device_type = device.get('type', 'device_type').lower()
-                        current = _('Current device | ') if device.get('is_active') else ''
+                        current = _('Current device') + ' | ' if device.get('is_active') else ''
 
                         items.append(self._generate_item(title=_('Switch playback to') + f' {device_type} {device_name}',
                                                          desc=f'{current}' + _('Device id:') + ' {device_id}',
@@ -514,7 +514,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 state_icons = ['shuffle', 'no_shuffle']
                 current_shuffle_state_index = states.index(current_shuffle_state)
 
-                items = [self._generate_item(_('Current state :') + state_names[current_shuffle_state_index],
+                items = [self._generate_item(_('Current state: ') + state_names[current_shuffle_state_index],
                                              small=True, icon=self.ICONS[state_icons[current_shuffle_state_index]],
                                              action=DoNothingAction())]
 

@@ -1,0 +1,329 @@
+# ulauncher-spotify-api german translation
+# Copyright (C) Ilja Gubins
+# Jan Petersen <dev.jdpdo@outlook.de>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2021-05-11 18:13+0200\n"
+"PO-Revision-Date: 2021-05-11 18:13+0200\n"
+"Last-Translator: Jan Petersen <dev.jdpdo@outlook.de>\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: main.py:121
+msgid "Port set in the preferences is not one of the supported ports."
+msgstr "Der gesetzte Port ist keiner der Unterstützten."
+
+#: main.py:122
+msgid "Something went very wrong, please report this issue on github."
+msgstr "Etwas ist schief gelaufen. Bitte tracke das Problem auf github."
+
+#: main.py:207 main.py:479 main.py:507
+msgid "Nothing is playing at this moment"
+msgstr "Aktuell keine Wiedergabe"
+
+#: main.py:208 main.py:480 main.py:508
+msgid "Start playing first"
+msgstr "Spiele erst etwas ab"
+
+#: main.py:218
+msgid "Paused"
+msgstr "Pausiert"
+
+#: main.py:218
+msgid "Playing"
+msgstr "Spielt"
+
+#: main.py:223
+msgid "Album:"
+msgstr "Album:"
+
+#: main.py:224 main.py:242
+msgid "on:"
+msgstr "auf:"
+
+#: main.py:251
+msgid "Next track"
+msgstr "Nächster Titel"
+
+#: main.py:252
+msgid "Skip playback to next track"
+msgstr "Springe zum nächsten Titel"
+
+#: main.py:258
+msgid "Previous track"
+msgstr "Vorheriger Titel"
+
+#: main.py:259
+msgid "Skip playback to previous track"
+msgstr "Springe zum letzten Titel"
+
+#: main.py:265
+msgid "Extension cheatsheet"
+msgstr "Erweiterungs-Cheatsheet"
+
+#: main.py:266
+msgid "List of all available commands"
+msgstr "Liste aller verfügbaren Kommandos"
+
+#: main.py:324
+msgid "Authorization"
+msgstr "Autorisation"
+
+#: main.py:325
+msgid "Authorize the extension with your Spotify account"
+msgstr "Verbinde die Erweiterung mit deinem Spotify-Account"
+
+#: main.py:347
+msgid "Current device"
+msgstr "Aktuelles Gerät"
+
+#: main.py:349
+msgid "Switch playback to"
+msgstr "Wechsle Wiedergabe auf"
+
+#: main.py:350 main.py:695
+msgid "Device id:"
+msgstr "Gerätename:"
+
+#: main.py:356 main.py:704
+msgid "No active devices running Spotify found"
+msgstr "Keines deiner Geräte führt Spotify aus"
+
+#: main.py:357 main.py:705
+msgid "Open Spotify on one of your devices first"
+msgstr "Öffne Spotify zuerst auf einem deiner Geräte"
+
+#: main.py:375
+msgid "Search for "
+msgstr "Suche nach "
+
+#: main.py:379
+msgid "For example: "
+msgstr "Zum Beispiel: "
+
+#: main.py:393
+msgid "Nothing found for "
+msgstr "Kein Treffer für "
+
+#: main.py:394
+msgid "Try again with different query?"
+msgstr "Versuche eine andere Anfrage"
+
+#: main.py:432
+msgid "Artist "
+msgstr "Interpret "
+
+#: main.py:432 main.py:447 main.py:557
+msgid "Popularity"
+msgstr "Beliebtheit"
+
+#: main.py:447 main.py:557
+msgid "Track"
+msgstr "Titel"
+
+#: main.py:462
+msgid "Playlist by"
+msgstr "Wiedergabeliste von"
+
+#: main.py:462
+msgid "tracks "
+msgstr "Titel "
+
+#: main.py:483
+msgid "context"
+msgstr "Alle"
+
+#: main.py:483
+msgid "off"
+msgstr "aus"
+
+#: main.py:483
+msgid "track"
+msgstr "Titel"
+
+#: main.py:484
+msgid "do not repeat"
+msgstr "Nicht wiederholen"
+
+#: main.py:484
+msgid "repeat context"
+msgstr "Wiederhole alle"
+
+#: main.py:484
+msgid "repeat track"
+msgstr "Wiederhole Titel"
+
+#: main.py:488 main.py:517
+msgid "Current state: "
+msgstr "Aktuell :"
+
+#: main.py:513
+msgid "do not shuffle"
+msgstr "Kein Shuffle"
+
+#: main.py:513
+msgid "shuffle"
+msgstr "Shuffle"
+
+#: main.py:524
+msgid "Set to "
+msgstr "Stelle auf "
+
+#: main.py:536
+msgid "No previously played songs found"
+msgstr "Keine abgespielten Titel gefunden"
+
+#: main.py:537
+msgid "Maybe an API bug?"
+msgstr "Vielleicht ein API-Fehler?"
+
+#: main.py:574
+msgid "Can not set volume when nothing is playing"
+msgstr "Lautstärke kann nur während einer Wiedergabe angepasst werden"
+
+#: main.py:580
+msgid "Current volume:"
+msgstr "Aktuelle Lautstärke"
+
+#: main.py:583
+msgid "Mute: 0% volume"
+msgstr "Still"
+
+#: main.py:588
+msgid "Full volume: 100% volume"
+msgstr "Maximal"
+
+#: main.py:598 main.py:605
+msgid "The volume must be from 0 to 100"
+msgstr "Die Lautstärke muss zwischen 0 und 100 liegen"
+
+#: main.py:599 main.py:606
+msgid "0 = mute; 100 = full volume"
+msgstr "0 = still; 100 = maximal"
+
+#: main.py:601
+msgid " volume"
+msgstr " Lautstärke"
+
+#: main.py:610
+msgid "Set volume to"
+msgstr "Lautstärke auf"
+
+#: main.py:620
+msgid "Can not save a song when nothing is playing"
+msgstr "Titel können nur gespeichert werden, wenn sie spielen"
+
+#: main.py:624
+msgid "You can save only tracks"
+msgstr "Nur Titel können gespeichert werden"
+
+#: main.py:632
+msgid "Add to your Liked Songs"
+msgstr "Zu Lieblingssongs hinzufügen"
+
+#: main.py:639
+msgid "This help menu:"
+msgstr "Dieses Menü:"
+
+#: main.py:641
+msgid "Add selected track to queue: Alt + Enter"
+msgstr "Ausgewähltey Titel mit Alt + Enter der Warteschlange hinzufügen"
+
+#: main.py:644
+msgid "Switch playback between devices:"
+msgstr "Wiedergabe zwischen Geräten wechseln:"
+
+#: main.py:647
+msgid "Change playback volume:"
+msgstr "Lautstärke ändern"
+
+#: main.py:650
+msgid "Save currently playing song to your Liked Songs:"
+msgstr "Aktuellen Titel zu Lieblingssongs hinzufügen:"
+
+#: main.py:653
+msgid "Change repeat state:"
+msgstr "Wiederholungseinstellungen:"
+
+#: main.py:656
+msgid "Change shuffle state:"
+msgstr "Shuffle-Einstellungen:"
+
+#: main.py:659
+msgid "Search for a track:"
+msgstr "Nach Titel suchen:"
+
+#: main.py:659 main.py:662 main.py:665 main.py:668 main.py:671
+msgid "-your-query-"
+msgstr "-Deine-Suche"
+
+#: main.py:662
+msgid "Search for an album:"
+msgstr "Nach Album suchen:"
+
+#: main.py:665
+msgid "Search for an artist:"
+msgstr "Nach Interpreten suchen:"
+
+#: main.py:668
+msgid "Search for a playlist:"
+msgstr "Nach Wiedergabeliste suchen:"
+
+#: main.py:671
+msgid "General search:"
+msgstr "Allgemeine Suche:"
+
+#: main.py:674
+msgid "Recently played tracks:"
+msgstr "Kürzlich gespielte Titel:"
+
+#: main.py:694
+msgid "Start playback on"
+msgstr "Starte Wiedergabe auf"
+
+#: main.py:800
+msgid "Spotify: 403 Forbidden"
+msgstr ""
+
+#: main.py:801
+msgid "Forbidden to access this endpoint or state has changed"
+msgstr "Zugriff verboten oder Status hat sich geändert"
+
+#: main.py:805
+msgid "Spotify: 401 Unauthorized"
+msgstr ""
+
+#: main.py:806
+msgid "Probably, scope of the request is not authorized"
+msgstr ""
+
+#: main.py:810
+msgid "Spotify: 404 Not Found"
+msgstr ""
+
+#: main.py:811
+msgid "Probably, request is not complete and missing something"
+msgstr "Wahrscheinlich ist die Anfrage unvollständig"
+
+#: main.py:816
+msgid "Spotify asks to try again later"
+msgstr ""
+
+#: main.py:820
+msgid "Spotify exception:"
+msgstr "Spotify-Ausnahme:"
+
+#: main.py:821
+msgid "Code:"
+msgstr ""
+
+#: main.py:821
+msgid "msg:"
+msgstr "Nachricht:"
+
