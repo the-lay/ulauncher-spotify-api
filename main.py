@@ -291,12 +291,16 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             if language in self.LANGUAGES:
                 translatation_file_path = gettext.find('base', local_path, [language])
                 logger.debug(translatation_file_path)
-                translatator = gettext.translation(domain='base',
-                                                   localedir=local_path,
-                                                   languages=[language])
-                translatator.install()
-                global _
-                _ = translatator.gettext
+                try:
+                    translatator = gettext.translation(domain='base',
+                                                       localedir=local_path,
+                                                       languages=[language])
+                    translatator.install()
+                except FileNotFoundError:
+                    logger.debug('Translation file not found. Go with default.')
+                else:
+                    global _
+                    _ = translatator.gettext
 
         # distribute events to proper listeners
         if extension is not self:
