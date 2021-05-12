@@ -49,7 +49,7 @@ except ImportError:
 
 
 logger = logging.getLogger(__name__)
-_ = gettext.translation
+_ = gettext.gettext
 
 class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
@@ -107,7 +107,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         # in case existing user upgrades and initial preferences are empty
         self.preferences = {
             'main_keyword': 'sp',
-            'language': 'en',
+            'main_language': 'en',
             'auth_port': '8080',
             'clear_cache': 'No',
             'show_help': 'Yes',
@@ -280,8 +280,25 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         elif isinstance(i, ExtensionResultItem):
             return RenderResultListAction([i])
 
-    # distribute events to proper listeners
     def on_event(self, event, extension):
+        # Set language
+        language = self.preferences['main_language']
+        domain = 'base'
+        local_path = os.path.join(os.path.dirname(__file__), 'locales')
+        logger.debug(f'Extension language is: {language}. Searching translation files in {local_path}.')
+        # Only translate if need to
+        if language != 'en':
+            if language in self.LANGUAGES:
+                translatation_file_path = gettext.find('base', local_path, [language])
+                logger.debug(translatation_file_path)
+                translatator = gettext.translation(domain='base',
+                                                   localedir=local_path,
+                                                   languages=[language])
+                translatator.install()
+                global _
+                _ = translatator.gettext
+
+        # distribute events to proper listeners
         if extension is not self:
             raise RuntimeError('Something is very wrong.')
         if isinstance(event, KeywordQueryEvent):
@@ -323,7 +340,6 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             self._generate_aliases()
 
     def on_keyword_query(self, keyword: str, argument: str):
-
         # if user is not authorized or no cached token => go through authorization flow and get the tokens
         if self.api.auth_manager.get_cached_token() is None:
             return self._render(self._generate_item(title=_('Authorization'),
@@ -332,15 +348,6 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
         # if user has a query => process the query
         if argument:
-            # Set language
-            language = self.preferences['language']
-            if language != 'en':
-                if language in self.LANGUAGES:
-                    translatator = gettext.translation(domain='base',
-                                            localedir='locales',
-                                            languages=language)
-                    translatator.install()
-
             # Parse arguments
             command, *components = argument.split()
             logger.debug(f'Recognized query "{argument}", split into command "{command}" and components "{components}"')
