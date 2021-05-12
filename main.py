@@ -226,7 +226,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
             items = [self._generate_item(f'{artists} -- {song_name}',
                                          _('Album:') + f'{album_name} | '
-                                         f'{status}' + _('on:') + '{device_playing_on_type} {device_playing_on_name} | '
+                                         f'{status}' + _('on:') + f'{device_playing_on_type} {device_playing_on_name} | '
                                          f'{track_progress}/{track_duration}',
                                          self.ICONS['pause'] if is_playing else self.ICONS['play'],
                                          action={'command': 'pause' if is_playing else 'play'},
@@ -244,7 +244,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
             items = [self._generate_item(f'{episode}',
                                          f'{show} | '
-                                         f'{status}'+ _('on:') + '{device_playing_on_type} {device_playing_on_name} | '
+                                         f'{status}'+ _('on:') + f'{device_playing_on_type} {device_playing_on_name} | '
                                          f'{episode_progress}/{episode_duration}',
                                          self.ICONS['pause'] if is_playing else self.ICONS['play'],
                                          action={'command': 'pause' if is_playing else 'play'},
@@ -373,7 +373,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         current = _('Current device') + ' | ' if device.get('is_active') else ''
 
                         items.append(self._generate_item(title=_('Switch playback to') + f' {device_type} {device_name}',
-                                                         desc=f'{current}' + _('Device id:') + ' {device_id}',
+                                                         desc=f'{current}' + _('Device id:') + f' {device_id}',
                                                          icon=self.ICONS['play'],  # TODO switch icon
                                                          action={'command': 'switch',
                                                                  'device_id': device_id}))
@@ -470,7 +470,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                             img = self.ICONS['main']
 
                         title = f'{artists} -- {name}'
-                        desc = _('Track') + f' | {duration} | ' + _('Popularity') + ' {popularity}% | {album_name}'
+                        desc = _('Track') + f' | {duration} | ' + _('Popularity') + f' {popularity}% | {album_name}'
                         alt_action = {'command': 'queue', 'uri': uri}
                         uri = [uri]
 
@@ -580,7 +580,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         img = self.ICONS['main']
 
                     title = f'{artists} -- {track_name}'
-                    desc = _('Track') + ' | {duration} | ' + _('Popularity') + f' {popularity}% | {album_name}'
+                    desc = _('Track') + f' | {duration} | ' + _('Popularity') + f' {popularity}% | {album_name}'
                     alt_action = {'command': 'queue', 'uri': uri}
                     uri = [uri]
 
@@ -633,7 +633,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                                                 icon=self.ICONS['volume'],
                                                                 action=SetUserQueryAction(f'{keyword} volume')))
 
-                    return self._render(self._generate_item(_('Set volume to') + ' {requested_volume}%',
+                    return self._render(self._generate_item(_('Set volume to') + f' {requested_volume}%',
                                                             icon=self.ICONS['volume'],
                                                             action={'command': 'volume',
                                                                     'state': requested_volume}))
