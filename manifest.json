@@ -16,6 +16,14 @@
       "default_value": "sp"
     },
     {
+      "id": "main_language",
+      "type": "select",
+      "name": "Language",
+      "description": "Choose your language.",
+      "default_value": "en",
+      "options": ["en", "de"]
+    },
+    {
       "id": "auth_port",
       "type": "select",
       "name": "Authentication port",
