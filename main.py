@@ -51,6 +51,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 _ = gettext.gettext
 
+
 class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
     CLIENT_ID = '1f3a663c5fdd4056b4c0e122ea55a3af'
@@ -172,7 +173,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             if hours:
                 duration += f'{hours:.0f}h'
             if minutes:
-                duration += f' {minutes:.0f}m'
+                duration += f'{minutes:.0f}m'
             if seconds:
                 duration += f' {seconds:.0f}s'
             return duration
@@ -225,8 +226,8 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             track_duration = self._parse_duration(currently_playing['item']['duration_ms'], short=True)
 
             items = [self._generate_item(f'{artists} -- {song_name}',
-                                         _('Album:') + f'{album_name} | '
-                                         f'{status}' + _('on:') + f'{device_playing_on_type} {device_playing_on_name} | '
+                                         f'{_("Album")}: {album_name} | '
+                                         f'{status} {_("on")}: {device_playing_on_type} {device_playing_on_name} | '
                                          f'{track_progress}/{track_duration}',
                                          self.ICONS['pause'] if is_playing else self.ICONS['play'],
                                          action={'command': 'pause' if is_playing else 'play'},
@@ -238,13 +239,13 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             device_playing_on_type = currently_playing['device']['type'].lower()
             device_playing_on_name = currently_playing['device']['name']
             is_playing = currently_playing['is_playing']
-            status = 'Playing' if is_playing else 'Paused'
+            status = _('Playing') if is_playing else _('Paused')
             episode_progress = self._parse_duration(currently_playing['progress_ms'], short=True)
             episode_duration = self._parse_duration(currently_playing['item']['duration_ms'], short=True)
 
             items = [self._generate_item(f'{episode}',
                                          f'{show} | '
-                                         f'{status}'+ _('on:') + f'{device_playing_on_type} {device_playing_on_name} | '
+                                         f'{status} {_("on")}: {device_playing_on_type} {device_playing_on_name} | '
                                          f'{episode_progress}/{episode_duration}',
                                          self.ICONS['pause'] if is_playing else self.ICONS['play'],
                                          action={'command': 'pause' if is_playing else 'play'},
@@ -289,18 +290,18 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         # Only translate if need to
         if language != 'en':
             if language in self.LANGUAGES:
-                translatation_file_path = gettext.find('base', local_path, [language])
-                logger.debug(translatation_file_path)
+                translation_file_path = gettext.find(domain, local_path, [language])
+                logger.debug(f'Translation file path: {translation_file_path}')
                 try:
-                    translatator = gettext.translation(domain='base',
-                                                       localedir=local_path,
-                                                       languages=[language])
-                    translatator.install()
+                    translator = gettext.translation(domain=domain,
+                                                     localedir=local_path,
+                                                     languages=[language])
+                    translator.install()
                 except FileNotFoundError:
                     logger.debug('Translation file not found. Go with default.')
                 else:
                     global _
-                    _ = translatator.gettext
+                    _ = translator.gettext
 
         # distribute events to proper listeners
         if extension is not self:
@@ -373,7 +374,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         current = _('Current device') + ' | ' if device.get('is_active') else ''
 
                         items.append(self._generate_item(title=_('Switch playback to') + f' {device_type} {device_name}',
-                                                         desc=f'{current}' + _('Device id:') + f' {device_id}',
+                                                         desc=f'{current}' + _('Device id') + f': {device_id}',
                                                          icon=self.ICONS['play'],  # TODO switch icon
                                                          action={'command': 'switch',
                                                                  'device_id': device_id}))
@@ -398,11 +399,11 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         'search': ['sp search bad guy', 'sp search gojira', 'sp search bonobo']
                     }
                     if command != 'search':
-                        search_for = _('Search for ') + f'{command}s'
+                        search_for = _('Search for') + f' {command}s'
                     else:
                         search_for = f'Enter your search query'
                     return self._render(self._generate_item(f'{search_for}',
-                                                            _('For example: ') + random.choice(examples[command]),
+                                                            f'{_("For example")}: {random.choice(examples[command])}',
                                                             icon=self.ICONS['main'],
                                                             action=DoNothingAction()))
 
@@ -416,7 +417,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 query = ' '.join(components)
                 search_results = self.api.search(query, limit=limit, type=type_search)
                 if not search_results:
-                    return self._render(self._generate_item(_('Nothing found for ') + query,
+                    return self._render(self._generate_item(f'{_("Nothing found for")} {query}',
                                                             _('Try again with different query?'),
                                                             action=DoNothingAction()))
 
@@ -441,7 +442,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                             img = self.ICONS['main']
 
                         title = f'{artists} -- {name}'
-                        desc = f'Album | {n_tracks} tracks | Released {released}'
+                        desc = f'{_("Album")} | {n_tracks} {_("tracks")} | Released {released}'
 
                     elif category == 'artist':
                         name = res['name']
@@ -455,7 +456,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                             img = self.ICONS['main']
 
                         title = f'{name}'
-                        desc = _('Artist ') + genres_output + ' | ' + _('Popularity') + f' {popularity}%'
+                        desc = _('Artist') + genres_output + ' | ' + _('Popularity') + f' {popularity}%'
 
                     elif category == 'track':
                         artists = ', '.join([artist['name'] for artist in res['artists']])
@@ -485,7 +486,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                             img = self.ICONS['main']
 
                         title = f'{name}'
-                        desc = _('Playlist by') + f' {owner} | {n_tracks}' + _('tracks ') + description
+                        desc = _('Playlist by') + f' {owner} | {n_tracks}' + _('tracks') + description
                     else:
                         raise RuntimeError('Wrong category received from Spotify api?')
 
@@ -506,19 +507,19 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                                             _('Start playing first'),
                                                             action=HideWindowAction()))
 
-                states = [_('off'), _('context'), _('track')]
+                states = ['off', 'context', 'track']
                 state_names = [_('do not repeat'), _('repeat context'), _('repeat track')]
                 current_repeat_state: str = currently_playing.get('repeat_state')
                 current_repeat_state_index = states.index(current_repeat_state)
 
-                items = [self._generate_item(_('Current state: ') + state_names[current_repeat_state_index],
+                items = [self._generate_item(f'{_("Current state")}: {state_names[current_repeat_state_index]}',
                                              small=True, icon=self.ICONS[f'repeat_{current_repeat_state}'],
                                              action=DoNothingAction())]
 
                 for i in range(len(states)):
                     if i == current_repeat_state_index:
                         continue
-                    items.append(self._generate_item(f'Set to {state_names[i]}',
+                    items.append(self._generate_item(f'{_("Set to")} {state_names[i]}',
                                                      small=True, icon=self.ICONS[f'repeat_{states[i]}'],
                                                      action={'command': 'repeat',
                                                              'state': states[i]},
@@ -540,14 +541,14 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 state_icons = ['shuffle', 'no_shuffle']
                 current_shuffle_state_index = states.index(current_shuffle_state)
 
-                items = [self._generate_item(_('Current state: ') + state_names[current_shuffle_state_index],
+                items = [self._generate_item(f'{_("Current state")}: {state_names[current_shuffle_state_index]}',
                                              small=True, icon=self.ICONS[state_icons[current_shuffle_state_index]],
                                              action=DoNothingAction())]
 
                 for i in range(len(states)):
                     if i == current_shuffle_state_index:
                         continue
-                    items.append(self._generate_item(_('Set to ') + state_names[i],
+                    items.append(self._generate_item(f'{_("Set to")} {state_names[i]}',
                                                      small=True, icon=self.ICONS[state_icons[i]],
                                                      action={'command': 'shuffle',
                                                              'state': states[i]},
@@ -603,7 +604,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 current_volume = current_volume['device']['volume_percent']
 
                 if len(components) == 0:
-                    items = [self._generate_item(_('Current volume:') + f' {current_volume}%',
+                    items = [self._generate_item(f'{_("Current volume")}: {current_volume}%',
                                                  small=True, icon=self.ICONS['volume'],
                                                  action=DoNothingAction()),
                              self._generate_item(_('Mute: 0% volume'),
@@ -624,14 +625,14 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         return self._render(self._generate_item(_('The volume must be from 0 to 100'),
                                                                 _('0 = mute; 100 = full volume'),
                                                                 icon=self.ICONS['volume'],
-                                                                action=SetUserQueryAction(keyword + _(' volume'))))
+                                                                action=SetUserQueryAction(f'{keyword} volume ')))
 
                     logger.debug(f'Interpreting "{components}" input as {requested_volume}')
                     if (requested_volume < 0) or (requested_volume > 100):
                         return self._render(self._generate_item(_('The volume must be from 0 to 100'),
                                                                 _('0 = mute; 100 = full volume'),
                                                                 icon=self.ICONS['volume'],
-                                                                action=SetUserQueryAction(f'{keyword} volume')))
+                                                                action=SetUserQueryAction(f'{keyword} volume ')))
 
                     return self._render(self._generate_item(_('Set volume to') + f' {requested_volume}%',
                                                             icon=self.ICONS['volume'],
@@ -662,42 +663,42 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
             elif command == 'help':
                 items = [
-                    self._generate_item(_('This help menu:') + f' {keyword} help',
+                    self._generate_item(f'{_("This help menu")}: {keyword} help',
                                         icon=self.ICONS['question'], small=True),
                     self._generate_item(_('Add selected track to queue: Alt + Enter'),
                                         icon=self.ICONS['play'], small=True,
                                         action=HideWindowAction()),
-                    self._generate_item(_('Switch playback between devices:') + f' {keyword} switch',
+                    self._generate_item(f'{_("Switch playback between devices")}: {keyword} switch',
                                         icon=self.ICONS['devices'], small=True,
                                         action=SetUserQueryAction(f'{keyword} switch')),
-                    self._generate_item(_('Change playback volume:') + f' {keyword} volume',
+                    self._generate_item(f'{_("Change playback volume")}: {keyword} volume',
                                         icon=self.ICONS['volume'], small=True,
                                         action=SetUserQueryAction(f'{keyword} volume')),
-                    self._generate_item(_('Save currently playing song to your Liked Songs:') + f' {keyword} save',
+                    self._generate_item(f'{_("Save currently playing song to your Liked Songs")}: {keyword} save',
                                         icon=self.ICONS['save'], small=True,
                                         action=SetUserQueryAction(f'{keyword} save')),
-                    self._generate_item(_('Change repeat state:') + f' {keyword} repeat',
+                    self._generate_item(f'{_("Change repeat state")}: {keyword} repeat',
                                         icon=self.ICONS['repeat_context'], small=True,
                                         action=SetUserQueryAction(f'{keyword} repeat')),
-                    self._generate_item(_('Change shuffle state:') + f' {keyword} shuffle',
+                    self._generate_item(f'{_("Change shuffle state")}: {keyword} shuffle',
                                         icon=self.ICONS['shuffle'], small=True,
                                         action=SetUserQueryAction(f'{keyword} shuffle')),
-                    self._generate_item(_('Search for a track:') + f' {keyword} track ' + _('-your-query-'),
+                    self._generate_item(f'{_("Search for a track")}: {keyword} track {_("-your-query-")}',
                                         icon=self.ICONS['track'], small=True,
                                         action=SetUserQueryAction(f'{keyword} track ')),
-                    self._generate_item(_('Search for an album:') + f' {keyword} album ' + _('-your-query-'),
+                    self._generate_item(f'{_("Search for an album")}: {keyword} album {_("-your-query-")}',
                                         icon=self.ICONS['album'], small=True,
                                         action=SetUserQueryAction(f'{keyword} album ')),
-                    self._generate_item(_('Search for an artist:') + f' {keyword} artist ' + _('-your-query-'),
+                    self._generate_item(f'{_("Search for an artist")}: {keyword} artist {_("-your-query-")}',
                                         icon=self.ICONS['artist'], small=True,
                                         action=SetUserQueryAction(f'{keyword} artist ')),
-                    self._generate_item(_('Search for a playlist:') + f' {keyword} playlist ' + _('-your-query-'),
+                    self._generate_item(f'{_("Search for a playlist")}: {keyword} playlist {_("-your-query-")}',
                                         icon=self.ICONS['playlist'], small=True,
                                         action=SetUserQueryAction(f'{keyword} playlist ')),
-                    self._generate_item(_('General search:') + f' {keyword} search ' + _('-your-query-'),
+                    self._generate_item(f'{_("General search")}: {keyword} search {_("-your-query-")}',
                                         icon=self.ICONS['search'], small=True,
                                         action=SetUserQueryAction(f'{keyword} search ')),
-                    self._generate_item(_('Recently played tracks:') + f' {keyword} history',
+                    self._generate_item(f'{_("Recently played tracks")}: {keyword} history',
                                         icon=self.ICONS['play'], small=True,
                                         action=SetUserQueryAction(f'{keyword} history')),
                 ]
@@ -718,7 +719,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 device_type = device.get('type', 'device_type').lower()
 
                 items.append(self._generate_item(_('Start playback on') + f' {device_type} {device_name}',
-                                                 _('Device id:') + f' {device_id}',
+                                                 _('Device id') + f': {device_id}',
                                                  self.ICONS['play'],
                                                  action={'command': 'play',
                                                          'device_id': device_id},
@@ -843,9 +844,10 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                                         action=HideWindowAction()))
             else:
                 logger.debug('Unknown SpotifyException', e)
-                return self._render(self._generate_item(_('Spotify exception:') + f' {e.http_status}',
+                return self._render(self._generate_item(_('Spotify exception') + f': {e.http_status}',
                                                         _('Code:') + f' {e.code}, ' + _('msg:') + f' {e.msg}',
                                                         action=HideWindowAction()))
+
 
 if __name__ == '__main__':
     UlauncherSpotifyAPIExtension().run()

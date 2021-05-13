@@ -40,12 +40,12 @@ msgid "Playing"
 msgstr "Spielt"
 
 #: main.py:223
-msgid "Album:"
-msgstr "Album:"
+msgid "Album"
+msgstr "Album"
 
 #: main.py:224 main.py:242
-msgid "on:"
-msgstr "auf:"
+msgid "on"
+msgstr "auf"
 
 #: main.py:251
 msgid "Next track"
@@ -88,8 +88,8 @@ msgid "Switch playback to"
 msgstr "Wechsle Wiedergabe auf"
 
 #: main.py:350 main.py:695
-msgid "Device id:"
-msgstr "Gerätename:"
+msgid "Device id"
+msgstr "Gerätename"
 
 #: main.py:356 main.py:704
 msgid "No active devices running Spotify found"
@@ -100,24 +100,24 @@ msgid "Open Spotify on one of your devices first"
 msgstr "Öffne Spotify zuerst auf einem deiner Geräte"
 
 #: main.py:375
-msgid "Search for "
-msgstr "Suche nach "
+msgid "Search for"
+msgstr "Suche nach"
 
 #: main.py:379
-msgid "For example: "
-msgstr "Zum Beispiel: "
+msgid "For example"
+msgstr "Zum Beispiel"
 
 #: main.py:393
-msgid "Nothing found for "
-msgstr "Kein Treffer für "
+msgid "Nothing found for"
+msgstr "Kein Treffer für"
 
 #: main.py:394
 msgid "Try again with different query?"
 msgstr "Versuche eine andere Anfrage"
 
 #: main.py:432
-msgid "Artist "
-msgstr "Interpret "
+msgid "Artist"
+msgstr "Interpret"
 
 #: main.py:432 main.py:447 main.py:557
 msgid "Popularity"
@@ -132,8 +132,8 @@ msgid "Playlist by"
 msgstr "Wiedergabeliste von"
 
 #: main.py:462
-msgid "tracks "
-msgstr "Titel "
+msgid "tracks"
+msgstr "Titel"
 
 #: main.py:483
 msgid "context"
@@ -160,8 +160,8 @@ msgid "repeat track"
 msgstr "Wiederhole Titel"
 
 #: main.py:488 main.py:517
-msgid "Current state: "
-msgstr "Aktuell :"
+msgid "Current state"
+msgstr "Aktuell"
 
 #: main.py:513
 msgid "do not shuffle"
@@ -172,8 +172,8 @@ msgid "shuffle"
 msgstr "Shuffle"
 
 #: main.py:524
-msgid "Set to "
-msgstr "Stelle auf "
+msgid "Set to"
+msgstr "Stelle auf"
 
 #: main.py:536
 msgid "No previously played songs found"
@@ -188,7 +188,7 @@ msgid "Can not set volume when nothing is playing"
 msgstr "Lautstärke kann nur während einer Wiedergabe angepasst werden"
 
 #: main.py:580
-msgid "Current volume:"
+msgid "Current volume"
 msgstr "Aktuelle Lautstärke"
 
 #: main.py:583
@@ -228,60 +228,60 @@ msgid "Add to your Liked Songs"
 msgstr "Zu Lieblingssongs hinzufügen"
 
 #: main.py:639
-msgid "This help menu:"
-msgstr "Dieses Menü:"
+msgid "This help menu"
+msgstr "Dieses Menü"
 
 #: main.py:641
 msgid "Add selected track to queue: Alt + Enter"
 msgstr "Ausgewähltey Titel mit Alt + Enter der Warteschlange hinzufügen"
 
 #: main.py:644
-msgid "Switch playback between devices:"
-msgstr "Wiedergabe zwischen Geräten wechseln:"
+msgid "Switch playback between devices"
+msgstr "Wiedergabe zwischen Geräten wechseln"
 
 #: main.py:647
-msgid "Change playback volume:"
+msgid "Change playback volume"
 msgstr "Lautstärke ändern"
 
 #: main.py:650
-msgid "Save currently playing song to your Liked Songs:"
-msgstr "Aktuellen Titel zu Lieblingssongs hinzufügen:"
+msgid "Save currently playing song to your Liked Songs"
+msgstr "Aktuellen Titel zu Lieblingssongs hinzufügen"
 
 #: main.py:653
-msgid "Change repeat state:"
-msgstr "Wiederholungseinstellungen:"
+msgid "Change repeat state"
+msgstr "Wiederholungseinstellungen"
 
 #: main.py:656
-msgid "Change shuffle state:"
-msgstr "Shuffle-Einstellungen:"
+msgid "Change shuffle state"
+msgstr "Shuffle-Einstellungen"
 
 #: main.py:659
-msgid "Search for a track:"
-msgstr "Nach Titel suchen:"
+msgid "Search for a track"
+msgstr "Nach Titel suchen"
 
 #: main.py:659 main.py:662 main.py:665 main.py:668 main.py:671
 msgid "-your-query-"
-msgstr "-Deine-Suche"
+msgstr "-Deine-Suche-"
 
 #: main.py:662
-msgid "Search for an album:"
-msgstr "Nach Album suchen:"
+msgid "Search for an album"
+msgstr "Nach Album suchen"
 
 #: main.py:665
-msgid "Search for an artist:"
-msgstr "Nach Interpreten suchen:"
+msgid "Search for an artist"
+msgstr "Nach Interpreten suchen"
 
 #: main.py:668
-msgid "Search for a playlist:"
-msgstr "Nach Wiedergabeliste suchen:"
+msgid "Search for a playlist"
+msgstr "Nach Wiedergabeliste suchen"
 
 #: main.py:671
-msgid "General search:"
-msgstr "Allgemeine Suche:"
+msgid "General search"
+msgstr "Allgemeine Suche"
 
 #: main.py:674
-msgid "Recently played tracks:"
-msgstr "Kürzlich gespielte Titel:"
+msgid "Recently played tracks"
+msgstr "Kürzlich gespielte Titel"
 
 #: main.py:694
 msgid "Start playback on"
@@ -316,8 +316,8 @@ msgid "Spotify asks to try again later"
 msgstr ""
 
 #: main.py:820
-msgid "Spotify exception:"
-msgstr "Spotify-Ausnahme:"
+msgid "Spotify exception"
+msgstr "Spotify-Ausnahme"
 
 #: main.py:821
 msgid "Code:"
