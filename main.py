@@ -456,7 +456,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                             img = self.ICONS['main']
 
                         title = f'{name}'
-                        desc = _('Artist') + genres_output + ' | ' + _('Popularity') + f' {popularity}%'
+                        desc = f'{_("Artist")}{genres_output} | {_("Popularity")} {popularity}%'
 
                     elif category == 'track':
                         artists = ', '.join([artist['name'] for artist in res['artists']])
@@ -471,7 +471,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                             img = self.ICONS['main']
 
                         title = f'{artists} -- {name}'
-                        desc = _('Track') + f' | {duration} | ' + _('Popularity') + f' {popularity}% | {album_name}'
+                        desc = f'{_("Track")} | {duration} | {_("Popularity")} {popularity}% | {album_name}'
                         alt_action = {'command': 'queue', 'uri': uri}
                         uri = [uri]
 
@@ -486,7 +486,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                             img = self.ICONS['main']
 
                         title = f'{name}'
-                        desc = _('Playlist by') + f' {owner} | {n_tracks}' + _('tracks') + description
+                        desc = f'{_("Playlist by")} {owner} | {n_tracks} {_("tracks")}{description}'
                     else:
                         raise RuntimeError('Wrong category received from Spotify api?')
 
