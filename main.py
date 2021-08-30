@@ -20,6 +20,7 @@ from ulauncher.api.shared.action.BaseAction import BaseAction # noqa
 from ulauncher.api.shared.action.SetUserQueryAction import SetUserQueryAction # noqa
 from ulauncher.api.shared.action.DoNothingAction import DoNothingAction # noqa
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction # noqa
+from ulauncher.api.shared.action.OpenUrlAction import OpenUrlAction # noqa
 
 import gettext
 import time
@@ -27,7 +28,7 @@ import os
 import logging
 import random
 import shutil
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote_plus
 from typing import Union
 import math
 
@@ -661,6 +662,39 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                                                         action={'command': 'save_tracks',
                                                                 'state': [song_uri]}))
 
+            elif command == 'lyrics':
+                logger.debug('Lyrics search request')
+
+                current_track = self.api.current_playback(additional_types='episode')
+                if not current_track:
+                    return self._render(self._generate_item(_('Nothing is playing'),
+                                                            icon=self.ICONS['search'],
+                                                            action=HideWindowAction()))
+                if current_track['currently_playing_type'] != 'track':
+                    return self._render(self._generate_item(_('You can search only tracks'),
+                                                            icon=self.ICONS['search'],
+                                                            action=HideWindowAction()))
+
+                artist = current_track['item']['artists'][0]['name']
+                song_name = current_track['item']['name']
+
+                query = quote_plus(f'{artist} - {song_name}')
+
+                genius_link = 'https://genius.com/search?q=' + query
+                azlyrics_link = 'https://search.azlyrics.com/search.php?q=' + query
+                # TODO: any other popular lyrics provider?
+
+                return self._render([
+                    self._generate_item(_('Search genius.com'),
+                                        desc=f'{genius_link}',
+                                        icon=self.ICONS['search'],
+                                        action=OpenUrlAction(genius_link)),
+                    self._generate_item(_('Search azlyrics.com'),
+                                        desc=f'{azlyrics_link}',
+                                        icon=self.ICONS['search'],
+                                        action=OpenUrlAction(azlyrics_link))
+                ])
+
             elif command == 'help':
                 items = [
                     self._generate_item(f'{_("This help menu")}: {keyword} help',
@@ -701,6 +735,9 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                     self._generate_item(f'{_("Recently played tracks")}: {keyword} history',
                                         icon=self.ICONS['play'], small=True,
                                         action=SetUserQueryAction(f'{keyword} history')),
+                    self._generate_item(f'{_("Lyrics of the currently playing track")}: {keyword} lyrics',
+                                        icon=self.ICONS['search'], small=True,
+                                        action=SetUserQueryAction(f'{keyword} lyrics'))
                 ]
                 return self._render(items)
 
