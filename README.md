@@ -13,7 +13,7 @@ Available commands
 Motivation
 --------------------------
 There's a great Ulauncher extension [pywkm/ulauncher-spotify](https://github.com/pywkm/ulauncher-spotify).
-However, ulauncher-spotify uses dbus to control Spotify, exposing very limited number of Spotify features to user.
+However, ulauncher-spotify uses dbus to control Spotify, exposing a very limited number of Spotify features to the user.
 
 In contrast, this extension makes use of Spotify's [Web API](https://developer.spotify.com/documentation/web-api/)
 through which it is possible to use almost all Spotify features. The aim is to provide direct access to most features
@@ -24,7 +24,7 @@ Installation
 --------------------------
 Please use the default way to install ulauncher extensions:
 `Preferences -> Extensions -> Add extension -> https://github.com/the-lay/ulauncher-spotify-api`.
-On the first run, the extension will try to automatically install the dependencies.
+On the first run, the extension will try to install the dependencies automatically.
 
 For various reasons (hardened permissions, non-standard installations...) automatic installation can fail, 
 and the ulauncher will report something along the lines of `ModuleNotFoundError: No module named 'spotipy'`.
@@ -33,11 +33,11 @@ In that case, you have to install dependencies manually:
 
 In case you have multiple Python environments on your system (PyEnv, Conda etc.),
 please note that you have to install the dependencies to the default system python that Ulauncher uses.
-Most likely this will be the command you want: `/usr/bin/python3 -m pip install "spotipy==2.16.1" "requests==2.23.0"`
+Most likely, this will be the command you want: `/usr/bin/python3 -m pip install "spotipy==2.16.1" "requests==2.23.0"`
 
 Extension's default keyword is `sp`. When you use the extension for the first time, you will have to
 go through OAuth authentication and allow access to your Spotify account.
-After that,you will be able to use the extension.
+After that, you will be able to use the extension.
 
 *Note: if you ever want to revoke extension's access, you can do so in the
 [Apps tab of your Spotify settings](https://www.spotify.com/account/apps/).*
@@ -79,7 +79,7 @@ If you have any suggestions or feel that something is missing, please
 Troubleshooting
 --------------------------
 - Spotipy's authentication workflow sets up a tiny web server to accept back Spotify's access token.
-By default port 8080 is used. If it is taken, please select a different one in the extension settings.
+By default, port 8080 is used. If it is taken, please select a different one in the extension settings.
 
 - Unfortunately, Spotify does not provide API access for free users for the following actions:
   - Next track (Skip User’s Playback To Next Track)
