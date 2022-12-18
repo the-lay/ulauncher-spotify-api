@@ -26,10 +26,11 @@ Please use the default way to install ulauncher extensions:
 `Preferences -> Extensions -> Add extension -> https://github.com/the-lay/ulauncher-spotify-api`.
 On the first run, the extension will try to install the dependencies automatically.
 
-For various reasons (hardened permissions, non-standard installations...) automatic installation can fail, 
-and the ulauncher will report something along the lines of `ModuleNotFoundError: No module named 'spotipy'`.
-In that case, you have to install dependencies manually:
-`pip3 install "spotipy==2.16.1" "requests==2.23.0"` and then try to reinstall the extension.
+For various reasons (pip is not installed, hardened permissions, non-standard installations...) automatic installation can fail, 
+and the Ulauncher will report something along the lines of `ModuleNotFoundError: No module named 'spotipy'`.
+In that case, first, make sure you have pip installed: `pip -V` should show a version. If pip binary is not found,
+please install it, e.g.: `sudo apt install pip3`. Next, you have to install python dependencies:
+`pip3 install "spotipy==2.16.1" "requests==2.23.0"` and then restart Ulauncher.
 
 In case you have multiple Python environments on your system (PyEnv, Conda etc.),
 please note that you have to install the dependencies to the default system python that Ulauncher uses.
