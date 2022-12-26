@@ -2,7 +2,9 @@ ulauncher-spotify-api
 --------------------------
 [ulauncher](https://github.com/Ulauncher/Ulauncher) extension that provides Spotify controls through WebAPI.
 
-![Demo gif](demo/demo.gif)
+<p align="center">
+  <img width="480" height="508" src="demo/demo.gif" alt="Demo gif">
+</p>
 
 *Note: some playback features are allowed only for Spotify Premium subscribers (see `Troubleshooting` below).*
 
