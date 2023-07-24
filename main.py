@@ -141,7 +141,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             "auth_port": "8080",
             "clear_cache": "No",
             "show_help": "Yes",
-            "aliases": "s: search; song: track; vol: volume; like: save; ?: help",
+            "aliases": "s: search; song: track; vol: volume; like: save; reco: recommendations ?: help",
             "search_results_limit": "8",
             "request_timeout": "0.5",
         }
@@ -977,6 +977,57 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                     ]
                 )
 
+            # Since Spotify-Web-API doesn't offer handling radio-playlists, we create an artificial
+            # radio, using the "Get Recommendations"-endpoint and input values from the current track
+            # and optionally number of tracks to add as argument
+            elif command == "recommendations":
+                logger.debug("Adding recommendation to song queue")
+
+                current_track = self.api.current_playback(additional_types="episode")
+
+                if current_track is None:
+                    return self._render(
+                        self._generate_item(
+                            _("Nothing is playing"),
+                            icon=self.ICONS["search"],
+                            action=HideWindowAction(),
+                        )
+                    )
+                if current_track["currently_playing_type"] != "track":
+                    return self._render(
+                        self._generate_item(
+                            _("You can only create add recommendations based on tracks"),
+                            icon=self.ICONS["search"],
+                            action=HideWindowAction(),
+                        )
+                    )
+                
+                artists_ids = [artist["id"] for artist in current_track["item"]["artists"]]
+                genres = current_track["item"]["album"]["genres"]
+                track_id = current_track["item"]["id"]
+                number_of_tracks = 20
+                
+                # consider additional argument only if user provides it
+                if len(components != 0 and isinstance(components[0], int)):
+                    number_of_tracks = components[0]
+
+                return self._render(
+                    self._generate_item(
+                        _("TODO"),
+                        _("TODO"),
+                        icon=self.ICONS["TODO"],
+                        action={
+                            "command": "recommendations",
+                            "state": {
+                                "artists_ids": artists_ids,
+                                "genres": genres,
+                                "track_id": track_id,
+                                "number_of_tracks": number_of_tracks
+                            }
+                        }
+                    )
+                )
+            
             elif command == "help":
                 items = [
                     self._generate_item(
@@ -1172,6 +1223,30 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 state = data.get("state", [])
                 logger.debug(f"Saving tracks {state}")
                 self.api.current_user_saved_tracks_add(state)
+
+            elif command == "recommendations":
+                state = data.get("state")
+
+                if state is None:
+                    return
+                
+                recommendations = self.api.recommendations(
+                        state["artists_ids"],
+                        state["genres"],
+                        state["track_id"],
+                        state["number_of_tracks"]
+                    )
+                
+                if recommendations is None or len(recommendations) < 1:
+                    return self._render(
+                        self._generate_item(
+                            _("Can't find recommendations"),
+                            action=HideWindowAction()
+                        )
+                    )
+
+                for recommendation in recommendations:
+                    self.api.add_to_queue(recommendation["tracks"]["uri"])
 
             else:
                 logger.debug("No handler for this command...")

@@ -327,3 +327,10 @@ msgstr ""
 msgid "msg:"
 msgstr "Nachricht:"
 
+# main.py:1019
+msgid "Can't find recommendations"
+msgstr "Keine Empfehlungen auffindbar"
+
+# main.py:997
+msgid "You can only create add recommendations based on tracks"
+msgstr "Es können nur für Titel Empfehlungen hinzugefügt werden"
