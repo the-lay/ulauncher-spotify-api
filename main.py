@@ -7,6 +7,7 @@ import shutil
 from urllib.parse import urlparse, quote_plus
 from typing import Union
 import math
+from functools import reduce
 
 # Fix for #17 (and ulauncher's #703): explicitly defining Gdk version
 import gi
@@ -141,7 +142,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             "auth_port": "8080",
             "clear_cache": "No",
             "show_help": "Yes",
-            "aliases": "s: search; song: track; vol: volume; like: save; reco: recommendations ?: help",
+            "aliases": "s: search; song: track; vol: volume; like: save; reco: recommendations; ?: help",
             "search_results_limit": "8",
             "request_timeout": "0.5",
         }
@@ -363,6 +364,10 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             return RenderResultListAction(i)
         elif isinstance(i, ExtensionResultItem):
             return RenderResultListAction([i])
+        
+    def get_nested_value_if_exists(self, data, keys, default=None):
+        ''' Little helper to consecutively dig into dicts without having to exists-check every key '''
+        return reduce(lambda d, key: d.get(key, default) if isinstance(d, dict) else data, keys, default)
 
     def on_event(self, event, extension):
         # Set language
@@ -993,6 +998,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                             action=HideWindowAction(),
                         )
                     )
+                
                 if current_track["currently_playing_type"] != "track":
                     return self._render(
                         self._generate_item(
@@ -1003,19 +1009,19 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                     )
                 
                 artists_ids = [artist["id"] for artist in current_track["item"]["artists"]]
-                genres = current_track["item"]["album"]["genres"]
+                genres = self.get_nested_value_if_exists(current_track, ["item", "album", "genres"], [])
                 track_id = current_track["item"]["id"]
                 number_of_tracks = 20
                 
                 # consider additional argument only if user provides it
-                if len(components != 0 and isinstance(components[0], int)):
+                if len(components) != 0 and isinstance(components[0], int):
                     number_of_tracks = components[0]
 
                 return self._render(
                     self._generate_item(
-                        _("TODO"),
-                        _("TODO"),
-                        icon=self.ICONS["TODO"],
+                        _("Add recommendations"),
+                        _("Add recommendations based on current playback to song-queue"),
+                        icon=self.ICONS["lyrics"],
                         action={
                             "command": "recommendations",
                             "state": {
@@ -1113,6 +1119,12 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         small=True,
                         action=SetUserQueryAction(f"{keyword} lyrics"),
                     ),
+                    self._generate_item(
+                        f'{_("Add recommendations to playback queue")}: {keyword} reco',
+                        icon=self.ICONS["lyrics"],
+                        small=True,
+                        action=SetUserQueryAction(f"{keyword} reco")
+                    )
                 ]
                 return self._render(items)
 

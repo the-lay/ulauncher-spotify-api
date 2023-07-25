@@ -334,3 +334,11 @@ msgstr "Keine Empfehlungen auffindbar"
 # main.py:997
 msgid "You can only create add recommendations based on tracks"
 msgstr "Es können nur für Titel Empfehlungen hinzugefügt werden"
+
+# main.py:1016
+msgid "Add recommendations"
+msgstr "Füge Empfehlungen hinzu"
+
+# main.py:1017
+msgid "Add recommendations based on current playback to song-queue"
+msgstr "Füge Empfehlungen basierend auf dem aktuellen Titel der Warteschlange hinzu"
