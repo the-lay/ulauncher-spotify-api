@@ -367,7 +367,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         
     def get_nested_value_if_exists(self, data, keys, default=None):
         ''' Little helper to consecutively dig into dicts without having to exists-check every key '''
-        return reduce(lambda d, key: d.get(key, default) if isinstance(d, dict) else data, keys, default)
+        return reduce(lambda d, key: d.get(key, default) if isinstance(d, dict) else d, keys, default)
 
     def on_event(self, event, extension):
         # Set language
@@ -1013,9 +1013,9 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 track_id = current_track["item"]["id"]
                 number_of_tracks = 20
                 
-                # consider additional argument only if user provides it
-                if len(components) != 0 and isinstance(components[0], int):
-                    number_of_tracks = components[0]
+                # consider additional argument only if user provides a numeric argument
+                if len(components) != 0 and components[0].isdigit():
+                    number_of_tracks = min(int(components[0]), 20)
 
                 return self._render(
                     self._generate_item(
@@ -1238,6 +1238,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
 
             elif command == "recommendations":
                 state = data.get("state")
+                logger.debug(f"Getting recommendations {state}")
 
                 if state is None:
                     return
@@ -1245,7 +1246,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 recommendations = self.api.recommendations(
                         state["artists_ids"],
                         state["genres"],
-                        state["track_id"],
+                        [state["track_id"]],
                         state["number_of_tracks"]
                     )
                 
@@ -1257,8 +1258,8 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         )
                     )
 
-                for recommendation in recommendations:
-                    self.api.add_to_queue(recommendation["tracks"]["uri"])
+                for recommendation in recommendations["tracks"]:
+                    self.api.add_to_queue(recommendation["uri"])
 
             else:
                 logger.debug("No handler for this command...")
