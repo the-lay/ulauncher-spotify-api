@@ -109,6 +109,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         "save": os.path.join(os.path.dirname(__file__), "images/save.png"),
         "lyrics": os.path.join(os.path.dirname(__file__), "images/lyrics.png"),
         "history": os.path.join(os.path.dirname(__file__), "images/history.png"),
+        "note": os.path.join(os.path.dirname(__file__), "images/note.png"),
     }
     LANGUAGES = [
         "de",
@@ -1021,7 +1022,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                     self._generate_item(
                         _("Add recommendations"),
                         _("Add recommendations based on current playback to song-queue"),
-                        icon=self.ICONS["lyrics"],
+                        icon=self.ICONS["note"],
                         action={
                             "command": "recommendations",
                             "state": {
@@ -1121,7 +1122,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                     ),
                     self._generate_item(
                         f'{_("Add recommendations to playback queue")}: {keyword} reco',
-                        icon=self.ICONS["lyrics"],
+                        icon=self.ICONS["note"],
                         small=True,
                         action=SetUserQueryAction(f"{keyword} reco")
                     )
