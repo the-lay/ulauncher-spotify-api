@@ -1011,11 +1011,11 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 artists_ids = [artist["id"] for artist in current_track["item"]["artists"]]
                 genres = self.get_nested_value_if_exists(current_track, ["item", "album", "genres"], [])
                 track_id = current_track["item"]["id"]
-                number_of_tracks = 20
+                number_of_tracks = 10
                 
                 # consider additional argument only if user provides a numeric argument
                 if len(components) != 0 and components[0].isdigit():
-                    number_of_tracks = min(int(components[0]), 20)
+                    number_of_tracks = min(int(components[0]), number_of_tracks)
 
                 return self._render(
                     self._generate_item(
@@ -1239,9 +1239,6 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             elif command == "recommendations":
                 state = data.get("state")
                 logger.debug(f"Getting recommendations {state}")
-
-                if state is None:
-                    return
                 
                 recommendations = self.api.recommendations(
                         state["artists_ids"],
