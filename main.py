@@ -7,6 +7,7 @@ import shutil
 from urllib.parse import urlparse, quote_plus
 from typing import Union
 import math
+from functools import reduce
 
 # Fix for #17 (and ulauncher's #703): explicitly defining Gdk version
 import gi
@@ -108,6 +109,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
         "save": os.path.join(os.path.dirname(__file__), "images/save.png"),
         "lyrics": os.path.join(os.path.dirname(__file__), "images/lyrics.png"),
         "history": os.path.join(os.path.dirname(__file__), "images/history.png"),
+        "note": os.path.join(os.path.dirname(__file__), "images/note.png"),
     }
     LANGUAGES = [
         "de",
@@ -141,7 +143,7 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             "auth_port": "8080",
             "clear_cache": "No",
             "show_help": "Yes",
-            "aliases": "s: search; song: track; vol: volume; like: save; ?: help",
+            "aliases": "s: search; song: track; vol: volume; like: save; reco: recommendations; ?: help",
             "search_results_limit": "8",
             "request_timeout": "0.5",
         }
@@ -363,6 +365,10 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
             return RenderResultListAction(i)
         elif isinstance(i, ExtensionResultItem):
             return RenderResultListAction([i])
+        
+    def get_nested_value_if_exists(self, data, keys, default=None):
+        ''' Little helper to consecutively dig into dicts without having to exists-check every key '''
+        return reduce(lambda d, key: d.get(key, default) if isinstance(d, dict) else d, keys, default)
 
     def on_event(self, event, extension):
         # Set language
@@ -977,6 +983,58 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                     ]
                 )
 
+            # Since Spotify-Web-API doesn't offer handling radio-playlists, we create an artificial
+            # radio, using the "Get Recommendations"-endpoint and input values from the current track
+            # and optionally number of tracks to add as argument
+            elif command == "recommendations":
+                logger.debug("Adding recommendation to song queue")
+
+                current_track = self.api.current_playback(additional_types="episode")
+
+                if current_track is None:
+                    return self._render(
+                        self._generate_item(
+                            _("Nothing is playing"),
+                            icon=self.ICONS["search"],
+                            action=HideWindowAction(),
+                        )
+                    )
+                
+                if current_track["currently_playing_type"] != "track":
+                    return self._render(
+                        self._generate_item(
+                            _("You can only create add recommendations based on tracks"),
+                            icon=self.ICONS["search"],
+                            action=HideWindowAction(),
+                        )
+                    )
+                
+                artists_ids = [artist["id"] for artist in current_track["item"]["artists"]]
+                genres = self.get_nested_value_if_exists(current_track, ["item", "album", "genres"], [])
+                track_id = current_track["item"]["id"]
+                number_of_tracks = 10
+                
+                # consider additional argument only if user provides a numeric argument
+                if len(components) != 0 and components[0].isdigit():
+                    number_of_tracks = min(int(components[0]), number_of_tracks)
+
+                return self._render(
+                    self._generate_item(
+                        _("Add recommendations"),
+                        _("Add recommendations based on current playback to song-queue"),
+                        icon=self.ICONS["note"],
+                        action={
+                            "command": "recommendations",
+                            "state": {
+                                "artists_ids": artists_ids,
+                                "genres": genres,
+                                "track_id": track_id,
+                                "number_of_tracks": number_of_tracks
+                            }
+                        }
+                    )
+                )
+            
             elif command == "help":
                 items = [
                     self._generate_item(
@@ -1062,6 +1120,12 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                         small=True,
                         action=SetUserQueryAction(f"{keyword} lyrics"),
                     ),
+                    self._generate_item(
+                        f'{_("Add recommendations to playback queue")}: {keyword} reco',
+                        icon=self.ICONS["note"],
+                        small=True,
+                        action=SetUserQueryAction(f"{keyword} reco")
+                    )
                 ]
                 return self._render(items)
 
@@ -1172,6 +1236,28 @@ class UlauncherSpotifyAPIExtension(Extension, EventListener):
                 state = data.get("state", [])
                 logger.debug(f"Saving tracks {state}")
                 self.api.current_user_saved_tracks_add(state)
+
+            elif command == "recommendations":
+                state = data.get("state")
+                logger.debug(f"Getting recommendations {state}")
+                
+                recommendations = self.api.recommendations(
+                        state["artists_ids"],
+                        state["genres"],
+                        [state["track_id"]],
+                        state["number_of_tracks"]
+                    )
+                
+                if recommendations is None or len(recommendations) < 1:
+                    return self._render(
+                        self._generate_item(
+                            _("Can't find recommendations"),
+                            action=HideWindowAction()
+                        )
+                    )
+
+                for recommendation in recommendations["tracks"]:
+                    self.api.add_to_queue(recommendation["uri"])
 
             else:
                 logger.debug("No handler for this command...")

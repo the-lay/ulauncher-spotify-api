@@ -52,7 +52,7 @@
       "type": "text",
       "name": "Custom aliases",
       "description": "Specify custom aliases. Example format: alias1: command1; alias2: command2. Please pay attention to the spaces.",
-      "default_value": "s: search; song: track; vol: volume; like: save; ?: help"
+      "default_value": "s: search; song: track; vol: volume; like: save; reco: recommendations; ?: help"
     },
     {
       "id": "search_results_limit",
