@@ -1,2 +1,2 @@
-spotipy==2.16.1
+spotipy==2.22.1
 requests==2.23.0
